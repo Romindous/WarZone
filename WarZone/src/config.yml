@@ -1,0 +1,51 @@
+spawns:
+  mbPrd: 1
+  tstRds: 5
+  enchThr: 4
+  armrThr: 4
+  flwRng: 6
+  maxlvl: 9
+  lvlbfr: 0.003
+  forArmrScr: 0.8
+  forWpnScr: 0.6
+  forHlthScr: 1.0
+  forSpdScr: 0.005
+  forEnchScr: 0.5
+setup:
+  table: 'wzpls'
+  gmTmMin: 30
+  GPTmMin: 28
+  mxEnchLvl: 5
+  clrRng: 20
+  blkkd: 15
+trade:
+  wpn:
+    s1: 'f16'
+    s2: 's20'
+    s3: 't24'
+    cb: 't16 s16'
+    ar: 'f8'
+    fw: 't4 s4'
+  tl:
+    t1: 'f16'
+    t2: 'f8 s8'
+    t3: 's16'
+    gh: 't8 s8'
+  fd:
+    f1: 'f2'
+    f2: 's2 f2'
+    f3: 's4'
+    f4: 't2 s2'
+    f5: 't8'
+  armr:
+    a1: 'f8'
+    a2: 's4 f4'
+    a3: 's8'
+    a4: 't8 s8'
+    a5: 't16'
+  xtr:
+    ench: 30
+    resp: 100
+    hlt: 15
+    spd: 10
+    str: 40
