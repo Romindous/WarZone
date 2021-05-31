@@ -86,6 +86,8 @@ public class Main extends JavaPlugin{
 			w.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
 			w.setGameRule(GameRule.DO_MOB_SPAWNING, false);
 			w.setTime(6000);
+			w.setStorm(true);
+			w.setWeatherDuration(1728000);
 		}
 		
 		//конфиг

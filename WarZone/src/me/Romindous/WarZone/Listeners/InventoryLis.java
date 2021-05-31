@@ -430,6 +430,7 @@ public class InventoryLis implements Listener{
 					p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
 					EntMeta.chngMoney(p, (short) -Short.parseShort(e.getCurrentItem().getItemMeta().getLore().get(1).substring(2, e.getCurrentItem().getItemMeta().getLore().get(1).indexOf(' ') - 2)), true);
 					ar.getPlTeam(p.getName()).rsps++;
+					ar.updTmsSb();
 					for (String s : Arena.getPlArena(p.getName()).getPls()) {
 						Bukkit.getPlayer(s).sendMessage(Main.prf() + ar.getPlTeam(p.getName()).getName() + "§7 комманда приобрела себе §2+1 §7возрождение!");
 					}
