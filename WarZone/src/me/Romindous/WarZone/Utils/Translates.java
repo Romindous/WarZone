@@ -2,6 +2,9 @@ package me.Romindous.WarZone.Utils;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
+import org.bukkit.block.Biome;
+import org.bukkit.entity.Villager.Type;
+
 import ru.komiss77.Objects.Oplayer;
 
 public class Translates {
@@ -162,6 +165,65 @@ public class Translates {
 			return 5;
 		default:
 			return 0;
+		}
+	}
+
+	public static Type getBmVllTp(final Biome b) {
+		switch (b) {
+		case BADLANDS:
+		case BADLANDS_PLATEAU:
+		case SAVANNA:
+		case SHATTERED_SAVANNA:
+		case SHATTERED_SAVANNA_PLATEAU:
+		case SAVANNA_PLATEAU:
+		case CRIMSON_FOREST:
+		case WOODED_BADLANDS_PLATEAU:
+		case ERODED_BADLANDS:
+			return Type.SAVANNA;
+		case BEACH:
+		case DESERT:
+		case DESERT_HILLS:
+		case DESERT_LAKES:
+		case NETHER_WASTES:
+		case SOUL_SAND_VALLEY:
+			return Type.DESERT;
+		case BAMBOO_JUNGLE:
+		case BAMBOO_JUNGLE_HILLS:
+		case JUNGLE:
+		case JUNGLE_EDGE:
+		case JUNGLE_HILLS:
+		case MUSHROOM_FIELD_SHORE:
+		case MUSHROOM_FIELDS:
+			return Type.JUNGLE;
+		case SWAMP:
+		case SWAMP_HILLS:
+		case DARK_FOREST:
+		case DARK_FOREST_HILLS:
+		case WARPED_FOREST:
+		case RIVER:
+			return Type.SWAMP;
+		case GIANT_SPRUCE_TAIGA:
+		case GIANT_SPRUCE_TAIGA_HILLS:
+		case GIANT_TREE_TAIGA:
+		case GIANT_TREE_TAIGA_HILLS:
+		case MOUNTAIN_EDGE:
+		case GRAVELLY_MOUNTAINS:
+		case MOUNTAINS:
+		case WOODED_MOUNTAINS:
+		case TAIGA:
+		case TAIGA_HILLS:
+		case TAIGA_MOUNTAINS:
+			return Type.TAIGA;
+		case SNOWY_BEACH:
+		case SNOWY_MOUNTAINS:
+		case SNOWY_TAIGA:
+		case SNOWY_TAIGA_HILLS:
+		case SNOWY_TAIGA_MOUNTAINS:
+		case SNOWY_TUNDRA:
+		case ICE_SPIKES:
+			return Type.SNOW;
+		default:
+			return Type.PLAINS;
 		}
 	}
 }

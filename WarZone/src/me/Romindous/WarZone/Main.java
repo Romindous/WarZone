@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -88,6 +89,11 @@ public class Main extends JavaPlugin{
 			w.setTime(6000);
 			w.setStorm(true);
 			w.setWeatherDuration(1728000);
+			w.setThundering(true);
+			w.setThunderDuration(1728000);
+			for (final Entity e : w.getEntitiesByClass(WanderingTrader.class)) {
+				e.remove();
+			}
 		}
 		
 		//конфиг
@@ -225,14 +231,14 @@ public class Main extends JavaPlugin{
 			ob.getScore("   ").setScore(7);
 			ob.getScore("§7К/Д (убийства на смерти): ")
 				.setScore(6);
-			ob.getScore("§2" + String.valueOf(rs.getInt("KLS")) + " §7/ (§2" + String.valueOf((rs.getInt("DTHS") == 0 ? 1 : rs.getInt("DTHS"))) + " §7+§2 " + String.valueOf(rs.getInt("RSPS")) + "§7) = §2" 
-				+ getStrFlt((float) rs.getInt("KLS") / (float) ((rs.getInt("DTHS") == 0 ? 1 : rs.getInt("DTHS")) + rs.getInt("RSPS"))))
+			ob.getScore("§2" + String.valueOf(rs.getInt("KLS")) + " §7/ (§2" + String.valueOf(rs.getInt("DTHS")) + " §7-§2 " + String.valueOf(rs.getInt("RSPS")) + "§7) = §2" 
+				+ getStrFlt((float) rs.getInt("KLS") / (float) (rs.getInt("DTHS") - rs.getInt("RSPS") > 0 ? rs.getInt("DTHS") - rs.getInt("RSPS") : 1)))
 				.setScore(5);
 			ob.getScore("  ").setScore(4);
 			ob.getScore("§7Победы / Проигрыши: ")
 				.setScore(3);
-			ob.getScore("§2" + String.valueOf(rs.getInt("WNS")) + " §7/§2 " + String.valueOf(rs.getInt("LSS") == 0 ? 1 : rs.getInt("LSS")) + " §7=§2 " 
-					+ getStrFlt((float) rs.getInt("WNS") / (float) (rs.getInt("LSS") == 0 ? 1 : rs.getInt("LSS"))))
+			ob.getScore("§2" + String.valueOf(rs.getInt("WNS")) + " §7/§2 " + String.valueOf(rs.getInt("LSS")) + " §7=§2 " 
+				+ getStrFlt((float) rs.getInt("WNS") / (float) (rs.getInt("LSS") == 0 ? 1 : rs.getInt("LSS"))))
 				.setScore(2);
 			ob.getScore(" ").setScore(1);
 			
@@ -268,19 +274,19 @@ public class Main extends JavaPlugin{
 		activearenas.remove(ar);
 		ar.getPls().clear();
 		ar.getSpcs().clear();
+		//заменяем цвета на белый
+		for (final Team tm : ar.getTms()) {
+			ar.whtClrs(tm.getName().charAt(1));
+		}
 		//убираем магазины
-		for (final WanderingTrader wt : ar.shps) {
-			wt.remove();
+		for (final UUID id : ar.shps) {
+			Bukkit.getEntity(id).remove();
 		}
 		//убираем мобов на карте
 		for (final Entity e : ar.getCntr().getWorld().getNearbyEntities(ar.getCntr(), ar.getCntr().distance(ar.getTms()[0].getSpwn()) + 20, 10, ar.getCntr().distance(ar.getTms()[0].getSpwn()) + 20)) {
 			if (e instanceof LivingEntity && e.getType() != EntityType.PLAYER) {
 				e.remove();
 			}
-		}
-		//заменяем цвета на белый
-		for (final Team tm : ar.getTms()) {
-			ar.whtClrs(tm.getName().charAt(1));
 		}
 		//чистим коллекции
 		Arrays.fill(ar.getTms(), null);

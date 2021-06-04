@@ -207,15 +207,25 @@ public class MainLis implements Listener{
 				} else {
 					e.setCancelled(true);
 				}
-			} else if (e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof Player) {
+			} else if (e instanceof EntityDamageByEntityEvent) {
 				//если игрок убивает моба
-				final Player dmgr = (Player) ((EntityDamageByEntityEvent) e).getDamager();
-				dmgr.playSound(e.getEntity().getLocation(), Sound.BLOCK_ANVIL_LAND, 0.3f, 2);
-				//монеты дамагеру
-				if (e.getEntity().hasMetadata("lvl")) {
-					EntMeta.chngMoney(dmgr, (short) (e.getEntity().getMetadata("lvl").get(0).asByte() * 5 + 5), true);
+				if (((EntityDamageByEntityEvent) e).getDamager() instanceof Player) {
+					final Player dmgr = (Player) ((EntityDamageByEntityEvent) e).getDamager();
+					dmgr.playSound(e.getEntity().getLocation(), Sound.BLOCK_ANVIL_LAND, 0.3f, 2);
+					//монеты дамагеру
+					if (e.getEntity().hasMetadata("lvl")) {
+						EntMeta.chngMoney(dmgr, (short) (e.getEntity().getMetadata("lvl").get(0).asByte() * 5 + 5), true);
+					}
+					e.getEntity().remove();
+				} else if (((EntityDamageByEntityEvent) e).getDamager() instanceof Projectile && ((Projectile) ((EntityDamageByEntityEvent) e).getDamager()).getShooter() instanceof Player) {
+					final Player dmgr = (Player) ((Projectile) ((EntityDamageByEntityEvent) e).getDamager()).getShooter();
+					dmgr.playSound(e.getEntity().getLocation(), Sound.BLOCK_ANVIL_LAND, 0.3f, 2);
+					//монеты дамагеру
+					if (e.getEntity().hasMetadata("lvl")) {
+						EntMeta.chngMoney(dmgr, (short) (e.getEntity().getMetadata("lvl").get(0).asByte() * 5 + 5), true);
+					}
+					e.getEntity().remove();
 				}
-				e.getEntity().remove();
 			} else {
 				//если моб умер не от игрока
 				e.getEntity().remove();

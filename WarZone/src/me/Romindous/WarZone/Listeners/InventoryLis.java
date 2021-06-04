@@ -126,25 +126,26 @@ public class InventoryLis implements Listener{
 		} else if (e.getView().getTitle().contains("Магазина")) {
 			e.setCancelled(true);
 			final Arena ar = Arena.getPlArena(p.getName());
+			final Inventory inv;
 			switch (e.getCurrentItem().getType()) {
 			case BARRIER:
 				p.closeInventory();
 				return;
 			case CAKE:
-				Inventory inv = Bukkit.createInventory(p, 27, "§6Магазин Еды");
+				inv = Bukkit.createInventory(p, 27, "§6Магазин Еды");
 				inv.setContents(Inventories.fillShpFdInv(ChatColor.getByChar(ar.getPlTeam(p.getName()).getName().charAt(1))));
 				p.closeInventory();
 				p.openInventory(inv);
 				break;
 			case WOODEN_SWORD:
 				inv = Bukkit.createInventory(p, 27, "§6Магазин Оружия");
-				inv.setContents(Inventories.fillShpWpnInv(ChatColor.getByChar(ar.getPlTeam(p.getName()).getName().charAt(1))));
+				inv.setContents(Inventories.fillShpWpnInv(p.getInventory(), ChatColor.getByChar(ar.getPlTeam(p.getName()).getName().charAt(1))));
 				p.closeInventory();
 				p.openInventory(inv);
 				break;
 			case TURTLE_HELMET:
 				inv = Bukkit.createInventory(p, 54, "§6Магазин Брони");
-				inv.setContents(Inventories.fillShpArmrInv(ChatColor.getByChar(ar.getPlTeam(p.getName()).getName().charAt(1))));
+				inv.setContents(Inventories.fillShpArmrInv(p.getInventory(), ChatColor.getByChar(ar.getPlTeam(p.getName()).getName().charAt(1))));
 				p.closeInventory();
 				p.openInventory(inv);
 				break;
@@ -157,7 +158,7 @@ public class InventoryLis implements Listener{
 			default:
 				if (e.getCurrentItem().getType() == Material.getMaterial("WOODEN" + ar.getTlSfx())) {
 					inv = Bukkit.createInventory(p, 27, "§6Магазин Инструментов");
-					inv.setContents(Inventories.fillShpTlInv(ar.getTlSfx(), ChatColor.getByChar(ar.getPlTeam(p.getName()).getName().charAt(1))));
+					inv.setContents(Inventories.fillShpTlInv(p.getInventory(), ar.getTlSfx(), ChatColor.getByChar(ar.getPlTeam(p.getName()).getName().charAt(1))));
 					p.closeInventory();
 					p.openInventory(inv);
 				}
@@ -431,7 +432,8 @@ public class InventoryLis implements Listener{
 					EntMeta.chngMoney(p, (short) -Short.parseShort(e.getCurrentItem().getItemMeta().getLore().get(1).substring(2, e.getCurrentItem().getItemMeta().getLore().get(1).indexOf(' ') - 2)), true);
 					ar.getPlTeam(p.getName()).rsps++;
 					ar.updTmsSb();
-					for (String s : Arena.getPlArena(p.getName()).getPls()) {
+					Main.data.chngNum(p.getName(), "rsps", 1);
+					for (final String s : Arena.getPlArena(p.getName()).getPls()) {
 						Bukkit.getPlayer(s).sendMessage(Main.prf() + ar.getPlTeam(p.getName()).getName() + "§7 комманда приобрела себе §2+1 §7возрождение!");
 					}
 				} else {
@@ -450,43 +452,47 @@ public class InventoryLis implements Listener{
 				}
 				break;
 			case ENCHANTED_BOOK:
-				if (p.getMetadata("cns").get(0).asShort() >= Short.parseShort(e.getCurrentItem().getItemMeta().getLore().get(1).substring(2, e.getCurrentItem().getItemMeta().getLore().get(1).indexOf(' ') - 2))) {
-					//есть что то в курсоре?
-					final ItemStack cr = e.getCursor();
-					if (Main.notItmNull(cr)) {
-						final String m = cr.getType().toString();
-						final Enchantment en;
-						if (m.contains("_SWORD")) {
-							en = Enchantment.DAMAGE_ALL;
-						} else if (m.contains(ar.getTlSfx())) {
-							en = Enchantment.DIG_SPEED;
-						} else if (m.contains("HELM") || m.contains("CHEST") || m.contains("LEGG") || m.contains("BOOT")) {
-							en = Enchantment.PROTECTION_ENVIRONMENTAL;
-						} else if (m.contains("BOW")) {
-							en = Enchantment.QUICK_CHARGE;
-						} else {
-							p.sendMessage(Main.prf() + "§cВы не можете зачаровать этот предмет!");
-							p.playSound(p.getLocation(), Sound.ENTITY_WANDERING_TRADER_NO, 1, 1);
-							return;
-						}
-						if (!cr.getItemMeta().hasEnchant(en) || cr.getItemMeta().getEnchantLevel(en) < Main.mxEnchLvl) {
-							p.setItemOnCursor(addEnch(cr, en));
-						} else {
-							p.sendMessage(Main.prf() + "§cВы уже максимально зачаровали этот предмет!");
-							p.playSound(p.getLocation(), Sound.ENTITY_WANDERING_TRADER_NO, 1, 1);
-							return;
-						}
-						p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
+				//есть что то в курсоре?
+				final ItemStack cr = e.getCursor();
+				if (Main.notItmNull(cr)) {
+					final String m = cr.getType().toString();
+					final Enchantment en;
+					if (m.contains("_SWORD")) {
+						en = Enchantment.DAMAGE_ALL;
+					} else if (m.contains(ar.getTlSfx())) {
+						en = Enchantment.DIG_SPEED;
+					} else if (m.contains("HELM") || m.contains("CHEST") || m.contains("LEGG") || m.contains("BOOT")) {
+						en = Enchantment.PROTECTION_ENVIRONMENTAL;
+					} else if (m.contains("BOW")) {
+						en = Enchantment.QUICK_CHARGE;
 					} else {
-						p.sendMessage(Main.prf() + "§cНажмите на книгу предметом, который хотите зачаровать!");
+						p.sendMessage(Main.prf() + "§cВы не можете зачаровать этот предмет!");
 						p.playSound(p.getLocation(), Sound.ENTITY_WANDERING_TRADER_NO, 1, 1);
 						return;
 					}
-					EntMeta.chngMoney(p, (short) -Short.parseShort(e.getCurrentItem().getItemMeta().getLore().get(1).substring(2, e.getCurrentItem().getItemMeta().getLore().get(1).indexOf(' ') - 2)), true);
+					if (!cr.getItemMeta().hasEnchant(en) || cr.getItemMeta().getEnchantLevel(en) < Main.mxEnchLvl) {
+						final String lr = e.getCurrentItem().getItemMeta().getLore().get(1);
+						final int i = lr.indexOf(' ');
+						if (p.getMetadata("cns").get(0).asShort() >= Integer.parseInt(lr.substring(2, i)) + (Integer.parseInt(lr.substring(i + 4, lr.indexOf(' ', i + 4))) * cr.getItemMeta().getEnchantLevel(en))) {
+							p.setItemOnCursor(addEnch(cr, en));
+							p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
+							EntMeta.chngMoney(p, (short) -(Integer.parseInt(lr.substring(2, i)) + (Integer.parseInt(lr.substring(i + 4, lr.indexOf(' ', i + 4))) * cr.getItemMeta().getEnchantLevel(en))), true);
+						} else {
+							p.sendMessage(Main.prf() + "§cУ вас не хватает монет для покупки этого!");
+							p.playSound(p.getLocation(), Sound.ENTITY_WANDERING_TRADER_NO, 1, 1);
+							return;
+						}
+					} else {
+						p.sendMessage(Main.prf() + "§cВы уже максимально зачаровали этот предмет!");
+						p.playSound(p.getLocation(), Sound.ENTITY_WANDERING_TRADER_NO, 1, 1);
+						return;
+					}
 				} else {
-					p.sendMessage(Main.prf() + "§cУ вас не хватает монет для покупки этого!");
+					p.sendMessage(Main.prf() + "§cНажмите на книгу предметом, который хотите зачаровать!");
 					p.playSound(p.getLocation(), Sound.ENTITY_WANDERING_TRADER_NO, 1, 1);
+					return;
 				}
+				
 				break;
 			case REDSTONE_TORCH:
 				p.closeInventory();

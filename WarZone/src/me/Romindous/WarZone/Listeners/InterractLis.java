@@ -77,11 +77,11 @@ public class InterractLis implements Listener{
 		case LEFT_CLICK_AIR:
 		case LEFT_CLICK_BLOCK:
 			final Player p = e.getPlayer();
-			final ItemStack it = p.getInventory().getItemInMainHand();
+			final ItemStack it = e.getItem();
 			if (p.hasMetadata("cns")) {
 				if (p.hasMetadata("kls") && Arena.getPlArena(p.getName()).getState() == GameState.RUNNING) {
 					//игрок в игре
-					e.setCancelled(e.getAction() == Action.RIGHT_CLICK_BLOCK && it.getType().isBlock() && p.getGameMode() != GameMode.CREATIVE);
+					e.setCancelled(e.getAction() == Action.RIGHT_CLICK_BLOCK && (it.getType().isBlock() || it.getType().toString().contains(Arena.getPlArena(p.getName()).getTlSfx())) && p.getGameMode() != GameMode.CREATIVE);
 				} else {
 					//игрок выбрал карту
 					if (Main.notItmNull(it) && it.getItemMeta().getDisplayName().contains("Комманды")) {

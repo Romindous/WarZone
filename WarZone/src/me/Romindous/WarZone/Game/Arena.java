@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,7 +24,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.WanderingTrader;
+import org.bukkit.entity.Villager.Profession;
+import org.bukkit.entity.Villager.Type;
+import org.bukkit.entity.ZombieVillager;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -51,7 +54,7 @@ public class Arena {
 	private final String tl;
 	private final byte min;
 	private final byte max;
-	public final WanderingTrader[] shps;
+	public final UUID[] shps;
 	public final Material[] mnbls;
 	public final Material[] recs;
 	private short time;
@@ -117,19 +120,22 @@ public class Arena {
 		//--
 		//магазины на карте
 		i = (byte) ars.getString("arenas." + name + ".shops.x").split(":").length;
-		this.shps = new WanderingTrader[i];
+		this.shps = new UUID[i];
 		for (i--; i >= 0; i--) {
-			final WanderingTrader wt = (WanderingTrader) cntr.getWorld().spawnEntity(new Location(cntr.getWorld(), 
+			final ZombieVillager vll = (ZombieVillager) cntr.getWorld().spawnEntity(new Location(cntr.getWorld(), 
 				Integer.parseInt(cs.getString("shops.x").split(":")[i]) + 0.5, 
-				Integer.parseInt(cs.getString("shops.y").split(":")[i]) + 0.5, 
+				Integer.parseInt(cs.getString("shops.y").split(":")[i]) + 0.1, 
 				Integer.parseInt(cs.getString("shops.z").split(":")[i]) + 0.5), 
-				EntityType.WANDERING_TRADER);
-			wt.setTicksLived(1);
-			wt.setCustomName("§6§lМагазин");
-			wt.setInvulnerable(true);
-			wt.setPersistent(true);
-			wt.setRemoveWhenFarAway(false);
-			shps[i] = wt;
+				EntityType.ZOMBIE_VILLAGER);
+			vll.setVillagerType(Translates.getBmVllTp(vll.getLocation().getBlock().getBiome()));
+			vll.setVillagerProfession(Profession.CARTOGRAPHER);
+			vll.setTicksLived(1);
+			vll.setAdult();
+			vll.setCustomName("§6§lМагазин");
+			vll.setInvulnerable(true);
+			vll.setPersistent(true);
+			vll.setRemoveWhenFarAway(false);
+			shps[i] = vll.getUniqueId();
 		}
 		//--
 	}
@@ -343,7 +349,9 @@ public class Arena {
 		pls.remove(name);
 		//кидаем в спектаторы
 		for (final String s : spcs) {
-			Bukkit.getPlayer(s).sendMessage(Main.prf() + dmsg);
+			if (Bukkit.getPlayer(s) != null) {
+				Bukkit.getPlayer(s).sendMessage(Main.prf() + dmsg);
+			}
 		}
 		addSpct(Bukkit.getPlayer(name));
 		//убираем игрока
@@ -704,7 +712,6 @@ public class Arena {
 		if (wntm.isEmpty()) {
 			for (final String s : pls) {
 				Bukkit.getPlayer(s).sendMessage(Main.prf() + "Результат: Ничья!");
-				Main.data.chngNum(name, "wns", 1);
 			}
 			for (final String s : spcs) {
 				Bukkit.getPlayer(s).sendMessage(Main.prf() + "Результат: Ничья!");
@@ -717,7 +724,7 @@ public class Arena {
 					Bukkit.getPlayer(s).sendMessage(wntm.substring(0, 2) + wn + "§7 - §2" + Bukkit.getPlayer(wn).getMetadata("kls").get(0).asByte() + "§7 убийств");
 				}
 				Bukkit.getPlayer(s).sendMessage("§7-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-				Main.data.chngNum(name, "wns", 1);
+				Main.data.chngNum(s, "wns", 1);
 			}
 			for (final String s : spcs) {
 				Bukkit.getPlayer(s).sendMessage(Main.prf() + wntm + "§7 комманда победила в этой битве!");
@@ -780,13 +787,13 @@ public class Arena {
 			ob.getScore("   ").setScore(7);
 			ob.getScore("§7К/Д (убийства на смерти): ")
 				.setScore(6);
-			ob.getScore("§2" + String.valueOf(rs.getInt("KLS")) + " §7/ (§2" + String.valueOf((rs.getInt("DTHS") == 0 ? 1 : rs.getInt("DTHS"))) + " §7+§2 " + String.valueOf(rs.getInt("RSPS")) + "§7) = §2" 
-				+ Main.getStrFlt((float) rs.getInt("KLS") / (float) ((rs.getInt("DTHS") == 0 ? 1 : rs.getInt("DTHS")) + rs.getInt("RSPS"))))
+			ob.getScore("§2" + String.valueOf(rs.getInt("KLS")) + " §7/ (§2" + String.valueOf(rs.getInt("DTHS")) + " §7-§2 " + String.valueOf(rs.getInt("RSPS")) + "§7) = §2" 
+				+ Main.getStrFlt((float) rs.getInt("KLS") / (float) (rs.getInt("DTHS") - rs.getInt("RSPS") > 0 ? rs.getInt("DTHS") - rs.getInt("RSPS") : 1)))
 				.setScore(5);
 			ob.getScore("  ").setScore(4);
 			ob.getScore("§7Победы / Проигрыши: ")
 				.setScore(3);
-			ob.getScore("§2" + String.valueOf(rs.getInt("WNS")) + " §7/§2 " + String.valueOf(rs.getInt("LSS") == 0 ? 1 : rs.getInt("LSS")) + " §7=§2 " 
+			ob.getScore("§2" + String.valueOf(rs.getInt("WNS")) + " §7/§2 " + String.valueOf(rs.getInt("LSS")) + " §7=§2 " 
 					+ Main.getStrFlt((float) rs.getInt("WNS") / (float) (rs.getInt("LSS") == 0 ? 1 : rs.getInt("LSS"))))
 				.setScore(2);
 			ob.getScore(" ").setScore(1);
@@ -818,13 +825,13 @@ public class Arena {
 			ob.getScore("   ").setScore(7);
 			ob.getScore("§7К/Д (убийства на смерти): ")
 				.setScore(6);
-			ob.getScore("§2" + String.valueOf(rs.getInt("KLS")) + " §7/ (§2" + String.valueOf((rs.getInt("DTHS") == 0 ? 1 : rs.getInt("DTHS"))) + " §7+§2 " + String.valueOf(rs.getInt("RSPS")) + "§7) = §2" 
-				+ Main.getStrFlt((float) rs.getInt("KLS") / (float) ((rs.getInt("DTHS") == 0 ? 1 : rs.getInt("DTHS")) + rs.getInt("RSPS"))))
+			ob.getScore("§2" + String.valueOf(rs.getInt("KLS")) + " §7/ (§2" + String.valueOf(rs.getInt("DTHS")) + " §7-§2 " + String.valueOf(rs.getInt("RSPS")) + "§7) = §2" 
+				+ Main.getStrFlt((float) rs.getInt("KLS") / (float) (rs.getInt("DTHS") - rs.getInt("RSPS") > 0 ? rs.getInt("DTHS") - rs.getInt("RSPS") : 1)))
 				.setScore(5);
 			ob.getScore("  ").setScore(4);
 			ob.getScore("§7Победы / Проигрыши: ")
 				.setScore(3);
-			ob.getScore("§2" + String.valueOf(rs.getInt("WNS")) + " §7/§2 " + String.valueOf(rs.getInt("LSS") == 0 ? 1 : rs.getInt("LSS")) + " §7=§2 " 
+			ob.getScore("§2" + String.valueOf(rs.getInt("WNS")) + " §7/§2 " + String.valueOf(rs.getInt("LSS")) + " §7=§2 " 
 					+ Main.getStrFlt((float) rs.getInt("WNS") / (float) (rs.getInt("LSS") == 0 ? 1 : rs.getInt("LSS"))))
 				.setScore(2);
 			ob.getScore(" ").setScore(1);

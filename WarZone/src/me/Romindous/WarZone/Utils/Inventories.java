@@ -3,6 +3,7 @@ package me.Romindous.WarZone.Utils;
 import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.FireworkEffect;
@@ -12,6 +13,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
@@ -112,7 +114,7 @@ public class Inventories {
 				its[i] = mkItm(ar.recs[2], "§2Прочный Материал", true);
 				break;
 			case 10:
-				its[i] = mkItm(Material.CAKE, "§6Еда", new LinkedList<String>(Arrays.asList(" ", "§7Покупка за §2Ресурсы")), (byte) 1, true);
+				its[i] = mkItm(Material.CAKE, "§6Еда", Arrays.asList(" ", "§7Покупка за §2Ресурсы"), (byte) 1, true);
 				break;
 			case 12:
 				its[i] = mkItm(Material.WOODEN_SWORD, "§6Оружие", new LinkedList<String>(Arrays.asList(" ", "§7Покупка за §2Ресурсы")), (byte) 1, true);
@@ -137,22 +139,26 @@ public class Inventories {
 		return its;
 	}
 	
-	public static ItemStack[] fillShpWpnInv(final ChatColor cc) {
+	public static ItemStack[] fillShpWpnInv(final PlayerInventory inv, final ChatColor cc) {
 		final ItemStack[] its = new ItemStack[27];
 		final ConfigurationSection cs = Main.plug.getConfig().getConfigurationSection("trade");
+		final float bfr = 1 - 
+			((inv.contains(Material.IRON_SWORD) ? 1 : 
+			(inv.contains(Material.STONE_SWORD) ? 0.7f : 
+			(inv.contains(Material.GOLDEN_SWORD) ? 0.4f : 0))));
 		for (byte i = 0; i < 27; i++) {
 			switch (i) {
 			case 4:
-				its[i] = mkItm(Material.WOODEN_SWORD, "§6Оружие", new LinkedList<String>(Arrays.asList(" ", "§7Покупка за §2Ресурсы")), (byte) 1, true);
+				its[i] = mkItm(Material.WOODEN_SWORD, "§6Оружие", Arrays.asList(" ", "§7Покупка за §2Ресурсы"), (byte) 1, true);
 				break;
 			case 10:
-				its[i] = mkItm(Material.GOLDEN_SWORD, cc + "Затупелый Меч", getRecPrs(cs, "wpn.s1"), (byte) 1, true);
+				its[i] = mkItm(Material.GOLDEN_SWORD, cc + "Затупелый Меч", getTlWpnPrs(cs, "wpn.s1", bfr), (byte) 1, true);
 				break;
 			case 11:
-				its[i] = mkItm(Material.STONE_SWORD, cc + "Нормальный Меч", getRecPrs(cs, "wpn.s2"), (byte) 1, true);
+				its[i] = mkItm(Material.STONE_SWORD, cc + "Нормальный Меч", getTlWpnPrs(cs, "wpn.s2", bfr), (byte) 1, true);
 				break;
 			case 12:
-				its[i] = mkItm(Material.IRON_SWORD, cc + "Остренный Меч", getRecPrs(cs, "wpn.s3"), (byte) 1, true);
+				its[i] = mkItm(Material.IRON_SWORD, cc + "Остренный Меч", getTlWpnPrs(cs, "wpn.s3", bfr), (byte) 1, true);
 				break;
 			case 14:
 				its[i] = mkItm(Material.CROSSBOW, cc + "Арбалет", getRecPrs(cs, "wpn.cb"), (byte) 1, true);
@@ -180,25 +186,29 @@ public class Inventories {
 		return its;
 	}
 	
-	public static ItemStack[] fillShpTlInv(final String sfx, final ChatColor cc) {
+	public static ItemStack[] fillShpTlInv(final PlayerInventory inv, final String sfx, final ChatColor cc) {
 		final ItemStack[] its = new ItemStack[27];
 		final ConfigurationSection cs = Main.plug.getConfig().getConfigurationSection("trade");
+		final float bfr = 1 - 
+			((inv.contains(Material.getMaterial("NETHERITE" + sfx)) ? 1 : 
+			(inv.contains(Material.getMaterial("DIAMOND" + sfx)) ? 0.7f : 
+			(inv.contains(Material.getMaterial("IRON" + sfx)) ? 0.4f : 0))));
 		for (byte i = 0; i < 27; i++) {
 			switch (i) {
 			case 4:
-				its[i] = mkItm(Material.getMaterial("WOODEN" + sfx), "§6Инструменты", new LinkedList<String>(Arrays.asList(" ", "§7Покупка за §2Ресурсы")), (byte) 1, true);
+				its[i] = mkItm(Material.getMaterial("WOODEN" + sfx), "§6Инструменты", Arrays.asList(" ", "§7Покупка за §2Ресурсы"), (byte) 1, true);
 				break;
 			case 10:
-				its[i] = mkItm(Material.getMaterial("IRON" + sfx), cc + "Затупелый Инструмент", getRecPrs(cs, "tl.t1"), (byte) 1, true);
+				its[i] = mkItm(Material.getMaterial("IRON" + sfx), cc + "Затупелый Инструмент", getTlWpnPrs(cs, "tl.t1", bfr), (byte) 1, true);
 				break;
 			case 12:
-				its[i] = mkItm(Material.getMaterial("DIAMOND" + sfx), cc + "Нормальный Инструмент", getRecPrs(cs, "tl.t2"), (byte) 1, true);
+				its[i] = mkItm(Material.getMaterial("DIAMOND" + sfx), cc + "Нормальный Инструмент", getTlWpnPrs(cs, "tl.t2", bfr), (byte) 1, true);
 				break;
 			case 14:
-				its[i] = mkItm(Material.getMaterial("NETHERITE" + sfx), cc + "Остренный Инструмент", getRecPrs(cs, "tl.t3"), (byte) 1, true);
+				its[i] = mkItm(Material.getMaterial("NETHERITE" + sfx), cc + "Остренный Инструмент", getTlWpnPrs(cs, "tl.t3", bfr), (byte) 1, true);
 				break;
 			case 16:
-				its[i] = mkItm(Material.PHANTOM_SPAWN_EGG, cc + "Призрак", getRecPrs(cs, "tl.gh"), (byte) 1, true);
+				its[i] = mkItm(Material.SHIELD, cc + "Щит", getRecPrs(cs, "tl.sh"), (byte) 1, true);
 				break;
 			case 22:
 				its[i] = mkItm(Material.REDSTONE_TORCH, "§cНазад", true);
@@ -217,7 +227,7 @@ public class Inventories {
 		for (byte i = 0; i < 27; i++) {
 			switch (i) {
 			case 4:
-				its[i] = mkItm(Material.CAKE, "§6Еда", new LinkedList<String>(Arrays.asList(" ", "§7Покупка за §2Ресурсы")), (byte) 1, true);
+				its[i] = mkItm(Material.CAKE, "§6Еда", Arrays.asList(" ", "§7Покупка за §2Ресурсы"), (byte) 1, true);
 				break;
 			case 10:
 				its[i] = mkItm(Material.APPLE, null, getRecPrs(cs, "fd.f1"), (byte) 4, true);
@@ -245,77 +255,78 @@ public class Inventories {
 		return its;
 	}
 	
-	public static ItemStack[] fillShpArmrInv(final ChatColor cc) {
+	public static ItemStack[] fillShpArmrInv(final PlayerInventory inv, final ChatColor cc) {
 		final ItemStack[] its = new ItemStack[54];
 		final ConfigurationSection cs = Main.plug.getConfig().getConfigurationSection("trade");
+		final float bfr = 1 - getArmBfr(inv.getArmorContents());
 		for (byte i = 0; i < 54; i++) {
 			switch (i) {
 			case 4:
-				its[i] = mkItm(Material.TURTLE_HELMET, "§6Броня", new LinkedList<String>(Arrays.asList(" ", "§7Покупка за §2Ресурсы")), (byte) 1, true);
+				its[i] = mkItm(Material.TURTLE_HELMET, "§6Броня", Arrays.asList(" ", "§7Покупка за §2Ресурсы"), (byte) 1, true);
 				break;
 				
 			case 10:
-				its[i] = mkItm(Material.LEATHER_HELMET, cc + "Растрепаный Шлем", getRecPrs(cs, "armr.a1"), (byte) 1, true);
+				its[i] = mkItm(Material.LEATHER_HELMET, cc + "Растрепаный Шлем", getArmPrs(cs, "armr.a1", bfr, 0.2f), (byte) 1, true);
 				break;
 			case 11:
-				its[i] = mkItm(Material.CHAINMAIL_HELMET, cc + "Паршивый Шлем", getRecPrs(cs, "armr.a2"), (byte) 1, true);
+				its[i] = mkItm(Material.CHAINMAIL_HELMET, cc + "Паршивый Шлем", getArmPrs(cs, "armr.a2", bfr, 0.2f), (byte) 1, true);
 				break;
 			case 13:
-				its[i] = mkItm(Material.IRON_HELMET, cc + "Нормальный Шлем", getRecPrs(cs, "armr.a3"), (byte) 1, true);
+				its[i] = mkItm(Material.IRON_HELMET, cc + "Нормальный Шлем", getArmPrs(cs, "armr.a3", bfr, 0.2f), (byte) 1, true);
 				break;
 			case 15:
-				its[i] = mkItm(Material.DIAMOND_HELMET, cc + "Качественный Шлем", getRecPrs(cs, "armr.a4"), (byte) 1, true);
+				its[i] = mkItm(Material.DIAMOND_HELMET, cc + "Качественный Шлем", getArmPrs(cs, "armr.a4", bfr, 0.2f), (byte) 1, true);
 				break;
 			case 16:
-				its[i] = mkItm(Material.NETHERITE_HELMET, cc + "Безупречный Шлем", getRecPrs(cs, "armr.a5"), (byte) 1, true);
+				its[i] = mkItm(Material.NETHERITE_HELMET, cc + "Безупречный Шлем", getArmPrs(cs, "armr.a5", bfr, 0.2f), (byte) 1, true);
 				break;
 				
 			case 19:
-				its[i] = mkItm(Material.LEATHER_CHESTPLATE, cc + "Растрепаный Нагрудник", getRecPrs(cs, "armr.a1"), (byte) 1, true);
+				its[i] = mkItm(Material.LEATHER_CHESTPLATE, cc + "Растрепаный Нагрудник", getArmPrs(cs, "armr.a1", bfr, 0.4f), (byte) 1, true);
 				break;
 			case 20:
-				its[i] = mkItm(Material.CHAINMAIL_CHESTPLATE, cc + "Паршивый Нагрудник", getRecPrs(cs, "armr.a2"), (byte) 1, true);
+				its[i] = mkItm(Material.CHAINMAIL_CHESTPLATE, cc + "Паршивый Нагрудник", getArmPrs(cs, "armr.a2", bfr, 0.4f), (byte) 1, true);
 				break;
 			case 22:
-				its[i] = mkItm(Material.IRON_CHESTPLATE, cc + "Нормальный Нагрудник", getRecPrs(cs, "armr.a3"), (byte) 1, true);
+				its[i] = mkItm(Material.IRON_CHESTPLATE, cc + "Нормальный Нагрудник", getArmPrs(cs, "armr.a3", bfr, 0.4f), (byte) 1, true);
 				break;
 			case 24:
-				its[i] = mkItm(Material.DIAMOND_CHESTPLATE, cc + "Качественный Нагрудник", getRecPrs(cs, "armr.a4"), (byte) 1, true);
+				its[i] = mkItm(Material.DIAMOND_CHESTPLATE, cc + "Качественный Нагрудник", getArmPrs(cs, "armr.a4", bfr, 0.4f), (byte) 1, true);
 				break;
 			case 25:
-				its[i] = mkItm(Material.NETHERITE_CHESTPLATE, cc + "Безупречный Нагрудник", getRecPrs(cs, "armr.a5"), (byte) 1, true);
+				its[i] = mkItm(Material.NETHERITE_CHESTPLATE, cc + "Безупречный Нагрудник", getArmPrs(cs, "armr.a5", bfr, 0.4f), (byte) 1, true);
 				break;
 				
 			case 28:
-				its[i] = mkItm(Material.LEATHER_LEGGINGS, cc + "Растрепаные Штаны", getRecPrs(cs, "armr.a1"), (byte) 1, true);
+				its[i] = mkItm(Material.LEATHER_LEGGINGS, cc + "Растрепаные Штаны", getArmPrs(cs, "armr.a1", bfr, 0.3f), (byte) 1, true);
 				break;
 			case 29:
-				its[i] = mkItm(Material.CHAINMAIL_LEGGINGS, cc + "Паршивые Штаны", getRecPrs(cs, "armr.a2"), (byte) 1, true);
+				its[i] = mkItm(Material.CHAINMAIL_LEGGINGS, cc + "Паршивые Штаны", getArmPrs(cs, "armr.a2", bfr, 0.3f), (byte) 1, true);
 				break;
 			case 31:
-				its[i] = mkItm(Material.IRON_LEGGINGS, cc + "Нормальные Штаны", getRecPrs(cs, "armr.a3"), (byte) 1, true);
+				its[i] = mkItm(Material.IRON_LEGGINGS, cc + "Нормальные Штаны", getArmPrs(cs, "armr.a3", bfr, 0.3f), (byte) 1, true);
 				break;
 			case 33:
-				its[i] = mkItm(Material.DIAMOND_LEGGINGS, cc + "Качественные Штаны", getRecPrs(cs, "armr.a4"), (byte) 1, true);
+				its[i] = mkItm(Material.DIAMOND_LEGGINGS, cc + "Качественные Штаны", getArmPrs(cs, "armr.a4", bfr, 0.3f), (byte) 1, true);
 				break;
 			case 34:
-				its[i] = mkItm(Material.NETHERITE_LEGGINGS, cc + "Безупречные Штаны", getRecPrs(cs, "armr.a5"), (byte) 1, true);
+				its[i] = mkItm(Material.NETHERITE_LEGGINGS, cc + "Безупречные Штаны", getArmPrs(cs, "armr.a5", bfr, 0.3f), (byte) 1, true);
 				break;
 				
 			case 37:
-				its[i] = mkItm(Material.LEATHER_BOOTS, cc + "Растрепаные Ботинки", getRecPrs(cs, "armr.a1"), (byte) 1, true);
+				its[i] = mkItm(Material.LEATHER_BOOTS, cc + "Растрепаные Ботинки", getArmPrs(cs, "armr.a1", bfr, 0.1f), (byte) 1, true);
 				break;
 			case 38:
-				its[i] = mkItm(Material.CHAINMAIL_BOOTS, cc + "Паршивые Ботинки", getRecPrs(cs, "armr.a2"), (byte) 1, true);
+				its[i] = mkItm(Material.CHAINMAIL_BOOTS, cc + "Паршивые Ботинки", getArmPrs(cs, "armr.a2", bfr, 0.1f), (byte) 1, true);
 				break;
 			case 40:
-				its[i] = mkItm(Material.IRON_BOOTS, cc + "Нормальные Ботинки", getRecPrs(cs, "armr.a3"), (byte) 1, true);
+				its[i] = mkItm(Material.IRON_BOOTS, cc + "Нормальные Ботинки", getArmPrs(cs, "armr.a3", bfr, 0.1f), (byte) 1, true);
 				break;
 			case 42:
-				its[i] = mkItm(Material.DIAMOND_BOOTS, cc + "Качественные Ботинки", getRecPrs(cs, "armr.a4"), (byte) 1, true);
+				its[i] = mkItm(Material.DIAMOND_BOOTS, cc + "Качественные Ботинки", getArmPrs(cs, "armr.a4", bfr, 0.1f), (byte) 1, true);
 				break;
 			case 43:
-				its[i] = mkItm(Material.NETHERITE_BOOTS, cc + "Безупречные Ботинки", getRecPrs(cs, "armr.a5"), (byte) 1, true);
+				its[i] = mkItm(Material.NETHERITE_BOOTS, cc + "Безупречные Ботинки", getArmPrs(cs, "armr.a5", bfr, 0.1f), (byte) 1, true);
 				break;
 				
 			case 49:
@@ -328,20 +339,109 @@ public class Inventories {
 		}
 		return its;
 	}
-	
+
+	public static float getArmBfr(final ItemStack[] arm) {
+		int i = 0;
+		if (arm[0] != null) {
+			switch (arm[0].getType()) {
+			case LEATHER_BOOTS:
+				i += 2;
+				break;
+			case CHAINMAIL_BOOTS:
+				i += 4;
+				break;
+			case IRON_BOOTS:
+				i += 6;
+				break;
+			case DIAMOND_BOOTS:
+				i += 8;
+				break;
+			case NETHERITE_BOOTS:
+				i += 10;
+				break;
+			default:
+				break;
+			}
+		}
+		if (arm[1] != null) {
+			switch (arm[1].getType()) {
+			case LEATHER_LEGGINGS:
+				i += 6;
+				break;
+			case CHAINMAIL_LEGGINGS:
+				i += 12;
+				break;
+			case IRON_LEGGINGS:
+				i += 18;
+				break;
+			case DIAMOND_LEGGINGS:
+				i += 24;
+				break;
+			case NETHERITE_LEGGINGS:
+				i += 30;
+				break;
+			default:
+				break;
+			}
+		}
+		if (arm[2] != null) {
+			switch (arm[2].getType()) {
+			case LEATHER_CHESTPLATE:
+				i += 8;
+				break;
+			case CHAINMAIL_CHESTPLATE:
+				i += 16;
+				break;
+			case IRON_CHESTPLATE:
+				i += 24;
+				break;
+			case DIAMOND_CHESTPLATE:
+				i += 32;
+				break;
+			case NETHERITE_CHESTPLATE:
+				i += 40;
+				break;
+			default:
+				break;
+			}
+		}
+		if (arm[3] != null) {
+			switch (arm[3].getType()) {
+			case LEATHER_HELMET:
+				i += 4;
+				break;
+			case CHAINMAIL_HELMET:
+				i += 8;
+				break;
+			case IRON_HELMET:
+				i += 12;
+				break;
+			case DIAMOND_HELMET:
+				i += 16;
+				break;
+			case NETHERITE_HELMET:
+				i += 20;
+				break;
+			default:
+				break;
+			}
+		}
+		return (float) i / 100f;
+	}
+
 	public static ItemStack[] fillShpXtrInv() {
 		final ItemStack[] its = new ItemStack[27];
 		final ConfigurationSection cs = Main.plug.getConfig().getConfigurationSection("trade");
 		for (byte i = 0; i < 27; i++) {
 			switch (i) {
 			case 4:
-				its[i] = mkItm(Material.ENDER_EYE, "§6Разное", new LinkedList<String>(Arrays.asList(" ", "§7Покупка за §eМонеты")), (byte) 1, true);
+				its[i] = mkItm(Material.ENDER_EYE, "§6Разное", Arrays.asList(" ", "§7Покупка за §eМонеты"), (byte) 1, true);
 				break;
 			case 10:
-				its[i] = mkItm(Material.ENCHANTED_BOOK, "§eЗачарование", getCnsPrs(cs, "xtr.ench", "§7Кликните сюда предметом для его §eзачарования§7!"), (byte) 1, true);
+				its[i] = mkItm(Material.ENCHANTED_BOOK, "§eЗачарование", Arrays.asList(" ", "§6" + cs.getString("xtr.ench") + " + (" + cs.getString("xtr.dlvl") + " * lvl)" + "§7 Монет", " ", "§7Кликните сюда предметом для его §eзачарования§7!", " "), (byte) 1, true);
 				break;
 			case 12:
-				its[i] = mkItm(Material.TOTEM_OF_UNDYING, "§e+1 Возрождение", getCnsPrs(cs, "xtr.resp", "§7Добавляет одно §eвозрождение §7ващей комманде!"), (byte) 1, true);
+				its[i] = mkItm(Material.TOTEM_OF_UNDYING, "§e+1 Возрождение", Arrays.asList(" ", "§6" + cs.getString("xtr.resp") + "§7 Монет", " ", "§7Добавляет одно §eвозрождение §7ващей комманде!", " "), (byte) 1, true);
 				break;
 			case 14:
 				ItemStack it = new ItemStack(Material.SPLASH_POTION);
@@ -405,15 +505,55 @@ public class Inventories {
 		prs.add(" ");
 		return prs;
 	}
-
-	public static LinkedList<String> getCnsPrs(final ConfigurationSection cs, final String pth, final String dscr) {
+	
+	public static LinkedList<String> getArmPrs(final ConfigurationSection cs, final String pth, final float bfr, final float f) {
 		final LinkedList<String> prs = new LinkedList<String>();
 		prs.add(" ");
-		prs.add("§6" + cs.getString(pth) + "§7 Монет");
-		prs.add(" ");
-		prs.add(dscr);
+		for (final String s : cs.getString(pth).split(" ")) {
+			switch (s.charAt(0)) {
+			case 'f':
+				prs.add("§a" + (int) (Integer.parseInt(s.substring(1)) * bfr * f) + "§7 Хрупкого Материала");
+				break;
+			case 's':
+				prs.add("§3" + (int) (Integer.parseInt(s.substring(1)) * bfr * f) + "§7 Нормального Материала");
+				break;
+			case 't':
+				prs.add("§2" + (int) (Integer.parseInt(s.substring(1)) * bfr * f) + "§7 Прочного Материала");
+				break;
+			default:
+				prs.add("§a100§7 Хрупкого Материала");
+				break;
+			}
+		}
 		prs.add(" ");
 		return prs;
+	}
+	
+	public static LinkedList<String> getTlWpnPrs(final ConfigurationSection cs, final String pth, final float bfr) {
+		final LinkedList<String> prs = new LinkedList<String>();
+		prs.add(" ");
+		for (final String s : cs.getString(pth).split(" ")) {
+			switch (s.charAt(0)) {
+			case 'f':
+				prs.add("§a" + (int) (Integer.parseInt(s.substring(1)) * bfr) + "§7 Хрупкого Материала");
+				break;
+			case 's':
+				prs.add("§3" + (int) (Integer.parseInt(s.substring(1)) * bfr) + "§7 Нормального Материала");
+				break;
+			case 't':
+				prs.add("§2" + (int) (Integer.parseInt(s.substring(1)) * bfr) + "§7 Прочного Материала");
+				break;
+			default:
+				prs.add("§a100§7 Хрупкого Материала");
+				break;
+			}
+		}
+		prs.add(" ");
+		return prs;
+	}
+
+	public static List<String> getCnsPrs(final ConfigurationSection cs, final String pth, final String dscr) {
+		return Arrays.asList(" ", "§6" + cs.getString(pth) + "§7 Монет", " ", dscr, " ");
 	}
 	
 	public static ItemStack mkItm(final Material m, final String dn, final boolean unbrk) {
@@ -425,7 +565,7 @@ public class Inventories {
 		return it;
 	}
 
-	public static ItemStack mkItm(final Material m, final String dn, final LinkedList<String> lr, final byte amt, final boolean unbrk) {
+	public static ItemStack mkItm(final Material m, final String dn, final List<String> lr, final byte amt, final boolean unbrk) {
 		final ItemStack it = new ItemStack(m, amt);
 		final ItemMeta mt = it.getItemMeta();
 		mt.setLore(lr);
