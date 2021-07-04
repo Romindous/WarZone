@@ -41,8 +41,7 @@ import me.Romindous.WarZone.Utils.EntMeta;
 import me.Romindous.WarZone.Utils.Inventories;
 import me.Romindous.WarZone.SQL.SQLGet;
 import ru.komiss77.ApiOstrov;
-import ru.komiss77.Enums.UniversalArenaState;
-import ru.komiss77.Managers.PM;
+import ru.komiss77.modules.player.PM;
 
 public class Main extends JavaPlugin{
 	
@@ -164,7 +163,7 @@ public class Main extends JavaPlugin{
 	        } else {
 				for(final String s : ars.getConfigurationSection("arenas").getKeys(false)) {
 					if (ars.contains("arenas." + s + ".fin")) {
-						ApiOstrov.sendArenaData(s, "§7[§2Поле Брани§7]", " ", "§2Ожидание", "§7Игроков: §20§7/§2" + ars.get("arenas." + s + ".min"), "Поле Брани", 0, UniversalArenaState.ОЖИДАНИЕ, false, false);
+						ApiOstrov.sendArenaData(s, ru.komiss77.enums.GameState.ОЖИДАНИЕ, "§7[§2Поле Брани§7]", "§2Ожидание", " ", "§7Игроков: §20§7/§2" + ars.get("arenas." + s + ".min"), "", 0);
 						nonactivearenas.add(s);
 					}
 				}
@@ -267,7 +266,7 @@ public class Main extends JavaPlugin{
 	}
 	
 	public static void endArena(Arena ar) {
-		ApiOstrov.sendArenaData(ar.getName(), "§7[§2Поле Брани§7]", " ", "§2Ожидание", "§7Игроков: §20§7/§2" + ar.getMin(), "Поле Брани", 0, UniversalArenaState.ОЖИДАНИЕ, false, false);
+		ApiOstrov.sendArenaData(ar.getName(), ru.komiss77.enums.GameState.ОЖИДАНИЕ, "§7[§2Поле Брани§7]", "§2Ожидание", " ", "§7Игроков: §20§7/§2" + ar.getMin(), "", 0);
 		for (String s : ar.getSpcs()) {
 			lobbyPlayer(Bukkit.getPlayer(s));
 		}

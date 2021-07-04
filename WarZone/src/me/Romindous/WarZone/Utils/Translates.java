@@ -5,7 +5,7 @@ import org.bukkit.Color;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Villager.Type;
 
-import ru.komiss77.Objects.Oplayer;
+import ru.komiss77.modules.player.Oplayer;
 
 public class Translates {
 
@@ -129,7 +129,7 @@ public class Translates {
 		return Color.WHITE;
 	}
 
-	public static String getTopGrp(Oplayer op) {
+	public static String getTopGrp(final Oplayer op) {
 		if (op.groups.contains("xpanitely")) {
 			return "Хранитель";
 		} else if (op.groups.contains("builder")) {

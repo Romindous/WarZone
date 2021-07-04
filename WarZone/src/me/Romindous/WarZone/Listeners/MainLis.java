@@ -32,16 +32,16 @@ import me.Romindous.WarZone.Game.GameState;
 import me.Romindous.WarZone.Utils.EntMeta;
 import me.clip.deluxechat.events.DeluxeChatEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import ru.komiss77.Enums.Data;
-import ru.komiss77.Events.BungeeStatRecieved;
-import ru.komiss77.Managers.PM;
-import ru.komiss77.Objects.Oplayer;
+import ru.komiss77.enums.Data;
+import ru.komiss77.events.BungeeDataRecieved;
+import ru.komiss77.modules.player.Oplayer;
+import ru.komiss77.modules.player.PM;
 
 public class MainLis implements Listener{
 	
 	@EventHandler(priority = EventPriority.MONITOR)
-	public void onBungee(final BungeeStatRecieved e) {
-        String wantArena = PM.getOplayer(e.getPlayer().getName()).getBungeeData(Data.WANT_ARENA_JOIN);
+	public void onBungee(final BungeeDataRecieved e) {
+        String wantArena = PM.getOplayer(e.getPlayer().getName()).getDataString(Data.WANT_ARENA_JOIN);
         if (!wantArena.isEmpty()) {
         	if (Arena.getNameArena(wantArena) != null && Arena.getNameArena(wantArena).getState() == GameState.LOBBY_WAIT) {
             	Arena.getNameArena(wantArena).addPl(e.getPlayer().getName());
