@@ -39,9 +39,10 @@ import me.Romindous.WarZone.Listeners.MainLis;
 import me.Romindous.WarZone.SQL.MySQL;
 import me.Romindous.WarZone.Utils.EntMeta;
 import me.Romindous.WarZone.Utils.Inventories;
+import me.Romindous.WarZone.Utils.TitleManager;
+import net.minecraft.EnumChatFormat;
 import me.Romindous.WarZone.SQL.SQLGet;
 import ru.komiss77.ApiOstrov;
-import ru.komiss77.modules.player.PM;
 
 public class Main extends JavaPlugin{
 	
@@ -202,7 +203,7 @@ public class Main extends JavaPlugin{
 		final String prm = data.getString(p.getName(), "prm");
 		p.setPlayerListName("§7[§5ЛОББИ§7] " + p.getName() + (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""));
 		
-		PM.nameTagManager.setNametag(p.getName(), "§7[§5ЛОББИ§7] §2", (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""));
+		TitleManager.sendNmTg(p.getName(), "§7[§5ЛОББИ§7] ", (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""), EnumChatFormat.c);
         
 		for (final Player other : Bukkit.getOnlinePlayers()) {
 			if (!other.hasMetadata("kls")) {
@@ -279,7 +280,9 @@ public class Main extends JavaPlugin{
 		}
 		//убираем магазины
 		for (final UUID id : ar.shps) {
-			Bukkit.getEntity(id).remove();
+			if (id != null) {
+				Bukkit.getEntity(id).remove();
+			}
 		}
 		//убираем мобов на карте
 		for (final Entity e : ar.getCntr().getWorld().getNearbyEntities(ar.getCntr(), ar.getCntr().distance(ar.getTms()[0].getSpwn()) + 20, 10, ar.getCntr().distance(ar.getTms()[0].getSpwn()) + 20)) {

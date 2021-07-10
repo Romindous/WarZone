@@ -42,8 +42,8 @@ import me.Romindous.WarZone.Listeners.MainLis;
 import me.Romindous.WarZone.Utils.EntMeta;
 import me.Romindous.WarZone.Utils.Inventories;
 import me.Romindous.WarZone.Utils.Translates;
+import net.minecraft.EnumChatFormat;
 import ru.komiss77.ApiOstrov;
-import ru.komiss77.modules.player.PM;
 
 public class Arena {
 
@@ -119,22 +119,6 @@ public class Arena {
 		//магазины на карте
 		i = (byte) ars.getString("arenas." + name + ".shops.x").split(":").length;
 		this.shps = new UUID[i];
-		for (i--; i >= 0; i--) {
-			final ZombieVillager vll = (ZombieVillager) cntr.getWorld().spawnEntity(new Location(cntr.getWorld(), 
-				Integer.parseInt(cs.getString("shops.x").split(":")[i]) + 0.5, 
-				Integer.parseInt(cs.getString("shops.y").split(":")[i]) + 0.1, 
-				Integer.parseInt(cs.getString("shops.z").split(":")[i]) + 0.5), 
-				EntityType.ZOMBIE_VILLAGER);
-			vll.setVillagerType(Translates.getBmVllTp(vll.getLocation().getBlock().getBiome()));
-			vll.setVillagerProfession(Profession.CARTOGRAPHER);
-			vll.setTicksLived(1);
-			vll.setAdult();
-			vll.setCustomName("§6§lМагазин");
-			vll.setInvulnerable(true);
-			vll.setPersistent(true);
-			vll.setRemoveWhenFarAway(false);
-			shps[i] = vll.getUniqueId();
-		}
 		//--
 	}
 	//асинхронная замена на цвета блоков
@@ -405,7 +389,7 @@ public class Arena {
 			//инфа
 			Bukkit.getPlayer(name).sendMessage(Main.prf() + "Вы покинули карту §2" + getName());
 			for (final String s : pls) {
-				TitleManager.sendActionBar(Bukkit.getPlayer(s), amtToHB());
+				TitleManager.sendAcBr(Bukkit.getPlayer(s), amtToHB(), 30);
 				Bukkit.getPlayer(s).sendMessage(Main.prf() + (getPlTeam(name) == null ? "§2" : getPlTeam(name).name.substring(0, 2)) + name + "§7 вышел с карты!");
 			}
 			//если недостаточно игроков
@@ -491,12 +475,12 @@ public class Arena {
 			p.sendMessage(Main.prf() + "Вы зашли на карту §2" + getName());
 			final String prm = Main.data.getString(p.getName(), "prm");
 			//неймтег
-			PM.nameTagManager.setNametag(name, "§7[§6" + getName() + "§7] §2", (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""));
+			TitleManager.sendNmTg(p.getName(), "§7[§6" + getName() + "§7] ", (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""), EnumChatFormat.c);
 	        //таб
 			p.setPlayerListName("§7[§6" + getName() + "§7] " + name + (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""));
 			//инфа
 			for (final String s : pls) {
-				TitleManager.sendActionBar(Bukkit.getPlayer(s), amtToHB());
+				TitleManager.sendAcBr(Bukkit.getPlayer(s), amtToHB(), 30);
 				if (!s.equalsIgnoreCase(name)) {
 					Bukkit.getPlayer(s).sendMessage(Main.prf() + "§2" + name + "§7 зашел на карту!");
 				}
@@ -534,7 +518,7 @@ public class Arena {
 		//таб
 		p.setPlayerListName("§7[§6" + getName() + "§7] " + tm.name.substring(0, 2) + p.getName() + (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""));
 		//неймтег
-		PM.nameTagManager.setNametag(p.getName(), "§7[§6" + getName() + "§7] " + tm.name.substring(0, 2), (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""));
+		TitleManager.sendNmTg(p.getName(), "§7[§6" + getName() + "§7] ", (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""), EnumChatFormat.a(tm.name.charAt(1)));
 		//звук
 		p.playSound(p.getLocation(), Sound.ITEM_ARMOR_EQUIP_IRON, 2, 1);
 		p.sendMessage(Main.prf() + "Вы присоеденились к комманде " + tm.name + "§7!");
@@ -562,7 +546,7 @@ public class Arena {
 				case 5:
 					for (final String s : pls) {
 						Bukkit.getPlayer(s).playSound(Bukkit.getPlayer(s).getLocation(), Sound.BLOCK_DISPENSER_FAIL, 0.8f, 1.2f);
-						TitleManager.sendActionBar(Bukkit.getPlayer(s), "§7До начала осталось §2" + time + " §7секунд!");
+						TitleManager.sendAcBr(Bukkit.getPlayer(s), "§7До начала осталось §2" + time + " §7секунд!", 30);
 					}
 					break;
 				case 4:
@@ -570,7 +554,7 @@ public class Arena {
 				case 2:
 				case 1:
 					for (final String s : pls) {
-						TitleManager.sendTitle(Bukkit.getPlayer(s), "", "§6" + time, 20);
+						TitleManager.sendSbTtl(Bukkit.getPlayer(s), "§6" + time, 10);
 						Bukkit.getPlayer(s).playSound(Bukkit.getPlayer(s).getLocation(), Sound.BLOCK_DISPENSER_FAIL, 0.8f, 1.2f);
 					}
 					break;
@@ -608,7 +592,7 @@ public class Arena {
 			//таб
 			p.setPlayerListName("§7[" + getPlTeam(s).name + "§7] " + s);
 			//неймтег
-			PM.nameTagManager.setNametag(s, getPlTeam(s).name.substring(0, 2), "");
+			TitleManager.sendNmTg(s, "", "", EnumChatFormat.a(getPlTeam(s).name.charAt(1)));
 			//обовляем игрока
 			Main.nrmlzPl(p);
 			p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 1000000, 0, true, false));
@@ -618,7 +602,7 @@ public class Arena {
 			//мета
 			EntMeta.chngMeta(p, "kls", (byte) 0);
 			//инфа
-			TitleManager.sendTitle(p, "§2Начинаем!", "§7Собирайте §2ресурсы §7и громите чужие §2комманды§7!" + time, 20);
+			TitleManager.sendTtlSbTtl(p, "§2Начинаем!", "§7Собирайте §2ресурсы §7и громите чужие §2комманды§7!" + time, 50);
 			p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 20, 1);
 		}
 		//тп игроков к комманду
@@ -628,6 +612,24 @@ public class Arena {
 				//скорбоард
 				runnScore(s);
 			}
+		}
+		//магазины
+		final ConfigurationSection cs = YamlConfiguration.loadConfiguration(new File(Main.folder + File.separator + "arenas.yml")).getConfigurationSection("arenas." + name);
+		for (byte i = (byte) (shps.length - 1); i >= 0; i--) {
+			final ZombieVillager vll = (ZombieVillager) cntr.getWorld().spawnEntity(new Location(cntr.getWorld(), 
+				Integer.parseInt(cs.getString("shops.x").split(":")[i]) + 0.5, 
+				Integer.parseInt(cs.getString("shops.y").split(":")[i]) + 0.1, 
+				Integer.parseInt(cs.getString("shops.z").split(":")[i]) + 0.5), 
+				EntityType.ZOMBIE_VILLAGER);
+			vll.setVillagerType(Translates.getBmVllTp(vll.getLocation().getBlock().getBiome()));
+			vll.setVillagerProfession(Profession.CARTOGRAPHER);
+			vll.setTicksLived(1);
+			vll.setAdult();
+			vll.setCustomName("§6§lМагазин");
+			vll.setInvulnerable(true);
+			vll.setPersistent(true);
+			vll.setRemoveWhenFarAway(false);
+			shps[i] = vll.getUniqueId();
 		}
 		//спавним мобов
 		mbspwm = new MnstrRun(cntr, (byte) cntr.distance(tms[0].spwn)).runTaskTimer(Main.plug, 0, Main.mbPrd * 20);
@@ -667,17 +669,17 @@ public class Arena {
 				switch (time) {
 				case 300:
 					for (final String s : pls) {
-						TitleManager.sendActionBar(Bukkit.getPlayer(s), "§7До конца осталось §25 §7минут!");
+						TitleManager.sendAcBr(Bukkit.getPlayer(s), "§7До конца осталось §25 §7минут!", 30);
 					}
 				case 60:
 					for (final String s : pls) {
-						TitleManager.sendActionBar(Bukkit.getPlayer(s), "§7Конец игры через §21 §7минуту!");
+						TitleManager.sendAcBr(Bukkit.getPlayer(s), "§7Конец игры через §21 §7минуту!", 30);
 					}
 					break;
 				case 30:
 				case 10:
 					for (final String s : pls) {
-						TitleManager.sendActionBar(Bukkit.getPlayer(s), "§7Осталось §2" + time + "§7секунд!");
+						TitleManager.sendAcBr(Bukkit.getPlayer(s), "§7Осталось §2" + time + "§7секунд!", 30);
 					}
 					break;
 				case 5:
@@ -686,7 +688,7 @@ public class Arena {
 				case 2:
 				case 1:
 					for (final String s : pls) {
-						TitleManager.sendTitle(Bukkit.getPlayer(s), ChatColor.GOLD + "" + time, "", 20);
+						TitleManager.sendTtl(Bukkit.getPlayer(s), ChatColor.GOLD + "" + time, 10);
 						Bukkit.getPlayer(s).playSound(Bukkit.getPlayer(s).getLocation(), Sound.BLOCK_DISPENSER_FAIL, 0.8f, 1.2f);
 					}
 					break;

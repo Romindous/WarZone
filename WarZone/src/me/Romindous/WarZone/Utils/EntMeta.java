@@ -16,7 +16,7 @@ public class EntMeta {
 		ent.setMetadata("cns", new FixedMetadataValue(Main.plug, val + (ent.hasMetadata("cns") ? ent.getMetadata("cns").get(0).asShort() : 0)));
 		if (show) {
 			Main.chgSbdTm(ent.getScoreboard(), "cns", "", " §6" + String.valueOf(ent.getMetadata("cns").get(0).asShort()));
-			TitleManager.sendActionBar(ent, val > 0 ? "§a+" + val + " монет" : "§c" + val + " монет");
+			TitleManager.sendAcBr(ent, val > 0 ? "§a+" + val + " монет" : "§c" + val + " монет", 20);
 		}
 	}
 

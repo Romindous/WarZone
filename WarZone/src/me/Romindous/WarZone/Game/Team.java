@@ -30,7 +30,7 @@ public class Team {
 	}
 
 	public static List<String> lrFromPls(final Team tm) {
-		LinkedList<String> lr = new LinkedList<String>();
+		final LinkedList<String> lr = new LinkedList<String>();
 		lr.add("");
 		for (final String s : tm.pls) {
 			lr.add(tm.name.substring(0, 2) + "✦ §7" + s);
