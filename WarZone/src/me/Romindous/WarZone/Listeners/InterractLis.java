@@ -20,10 +20,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import me.Romindous.WarZone.Main;
 import me.Romindous.WarZone.Game.Arena;
 import me.Romindous.WarZone.Game.GameState;
 import me.Romindous.WarZone.Utils.Inventories;
+import net.kyori.adventure.text.Component;
 import ru.komiss77.ApiOstrov;
 
 public class InterractLis implements Listener{
@@ -81,6 +84,9 @@ public class InterractLis implements Listener{
 			if (p.hasMetadata("cns")) {
 				if (p.hasMetadata("kls") && Arena.getPlArena(p.getName()).getState() == GameState.RUNNING) {
 					//игрок в игре
+					if (it == null) {
+						return;
+					}
 					e.setCancelled(e.getAction() == Action.RIGHT_CLICK_BLOCK && (it.getType().isBlock() || it.getType().toString().contains(Arena.getPlArena(p.getName()).getTlSfx())) && p.getGameMode() != GameMode.CREATIVE);
 				} else {
 					//игрок выбрал карту
@@ -122,11 +128,28 @@ public class InterractLis implements Listener{
 		final Player p = e.getPlayer();
 		if (p.hasMetadata("kls")) {
 			//игрок в игре
-			for (final Material mt : Arena.getPlArena(p.getName()).mnbls) {
+			final Material[] mts = Arena.getPlArena(p.getName()).mnbls;
+			for (int i = mts.length -1; i >= 0; i--) {
+				final Material mt = mts[i];
 				if (e.getBlock().getType() == mt) {
 					e.setExpToDrop(0);
 					e.setDropItems(false);
-					p.getInventory().addItem(e.getBlock().getDrops().iterator().next());
+					final ItemStack it = e.getBlock().getDrops().iterator().next();
+					final ItemMeta im = it.getItemMeta();
+					switch (i) {
+						case 1:
+							im.displayName(Component.text("§3Нормальный Материал"));
+							break;
+						case 2:
+							im.displayName(Component.text("§2Прочный Материал"));
+							break;
+						default:
+						case 0:
+							im.displayName(Component.text("§aХрупкий Материал"));
+							break;
+					}
+					it.setItemMeta(im);
+					p.getInventory().addItem(it);
 					p.playSound(e.getBlock().getLocation(), Sound.ENTITY_ITEM_PICKUP, 0.5f, 1);
 					Bukkit.getScheduler().runTaskLater(Main.plug, new Runnable() {
 						@Override

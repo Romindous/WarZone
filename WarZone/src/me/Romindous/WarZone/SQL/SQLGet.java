@@ -6,6 +6,7 @@ import java.sql.SQLException;
 
 import org.bukkit.Bukkit;
 import me.Romindous.WarZone.Main;
+import ru.komiss77.ApiOstrov;
 
 public class SQLGet {
 	
@@ -47,7 +48,7 @@ public class SQLGet {
 	public void chngNum(final String name, final String cat, final int n) {
 		try {
 			final ResultSet rs = exctStrStmt("SELECT * FROM " + Main.tbl + " WHERE NAME=?", name).executeQuery(); rs.next();
-			final PreparedStatement ps = Main.sql.getConn().prepareStatement("UPDATE " + Main.tbl + " SET " + cat.toUpperCase() + "=? WHERE NAME=?");
+			final PreparedStatement ps = ApiOstrov.getLocalConnection().prepareStatement("UPDATE " + Main.tbl + " SET " + cat.toUpperCase() + "=? WHERE NAME=?");
 			ps.setInt(1, rs.getInt(cat.toUpperCase()) + n);
 			ps.setString(2, name);
 			ps.executeUpdate();
@@ -65,7 +66,7 @@ public class SQLGet {
 	}
 	
 	public PreparedStatement exctStrStmt(final String comm, final String... vars) throws SQLException {
-		final PreparedStatement ps = Main.sql.getConn().prepareStatement(comm);
+		final PreparedStatement ps = ApiOstrov.getLocalConnection().prepareStatement(comm);
 		for (byte i = 1; i <= vars.length; i++) {
 			ps.setString(i, vars[i-1]);
 		}
@@ -76,7 +77,7 @@ public class SQLGet {
 		try {
 			final ResultSet rs = exctStrStmt("SELECT * FROM " + Main.tbl + " WHERE NAME=?", name).executeQuery();
 			if (!rs.next()) {
-				final PreparedStatement ps = Main.sql.getConn().prepareStatement("INSERT IGNORE INTO " + Main.tbl + "(NAME,KLS,DTHS,RSPS,WNS,LSS,PRM) VALUES (?,?,?,?,?,?,?)");
+				final PreparedStatement ps = ApiOstrov.getLocalConnection().prepareStatement("INSERT IGNORE INTO " + Main.tbl + "(NAME,KLS,DTHS,RSPS,WNS,LSS,PRM) VALUES (?,?,?,?,?,?,?)");
 				ps.setString(1, name);
 				ps.setInt(2, 0);
 				ps.setInt(3, 0);

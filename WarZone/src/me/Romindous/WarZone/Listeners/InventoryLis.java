@@ -474,9 +474,9 @@ public class InventoryLis implements Listener{
 						final String lr = e.getCurrentItem().getItemMeta().getLore().get(1);
 						final int i = lr.indexOf(' ');
 						if (p.getMetadata("cns").get(0).asShort() >= Integer.parseInt(lr.substring(2, i)) + (Integer.parseInt(lr.substring(i + 4, lr.indexOf(' ', i + 4))) * cr.getItemMeta().getEnchantLevel(en))) {
-							p.setItemOnCursor(addEnch(cr, en));
 							p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
 							EntMeta.chngMoney(p, (short) -(Integer.parseInt(lr.substring(2, i)) + (Integer.parseInt(lr.substring(i + 4, lr.indexOf(' ', i + 4))) * cr.getItemMeta().getEnchantLevel(en))), true);
+							p.setItemOnCursor(addEnch(cr, en));
 						} else {
 							p.sendMessage(Main.prf() + "§cУ вас не хватает монет для покупки этого!");
 							p.playSound(p.getLocation(), Sound.ENTITY_WANDERING_TRADER_NO, 1, 1);

@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -30,18 +31,20 @@ import me.Romindous.WarZone.Main;
 import me.Romindous.WarZone.Game.Arena;
 import me.Romindous.WarZone.Game.GameState;
 import me.Romindous.WarZone.Utils.EntMeta;
+import me.Romindous.WarZone.Utils.Translates;
 import me.clip.deluxechat.events.DeluxeChatEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import ru.komiss77.ApiOstrov;
 import ru.komiss77.enums.Data;
+import ru.komiss77.enums.Stat;
 import ru.komiss77.events.BungeeDataRecieved;
-import ru.komiss77.modules.player.Oplayer;
 import ru.komiss77.modules.player.PM;
 
 public class MainLis implements Listener{
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onBungee(final BungeeDataRecieved e) {
-        String wantArena = PM.getOplayer(e.getPlayer().getName()).getDataString(Data.WANT_ARENA_JOIN);
+        final String wantArena = PM.getOplayer(e.getPlayer().getName()).getDataString(Data.WANT_ARENA_JOIN);
         if (!wantArena.isEmpty()) {
         	if (Arena.getNameArena(wantArena) != null && Arena.getNameArena(wantArena).getState() == GameState.LOBBY_WAIT) {
             	Arena.getNameArena(wantArena).addPl(e.getPlayer().getName());
@@ -50,7 +53,7 @@ public class MainLis implements Listener{
         Bukkit.getScheduler().runTaskLater(Main.plug, new Runnable() {
 			@Override
 			public void run() {
-		        Main.data.setString(e.getPlayer().getName(), "prm", getTopGroup(e.getOplayer()));
+		        Main.data.setString(e.getPlayer().getName(), "prm", Translates.getTopGroup(e.getOplayer().getGroups()));
 			}
 		}, 2);
 	}
@@ -142,16 +145,17 @@ public class MainLis implements Listener{
 			if (e.getEntity() instanceof Player) {
 				final Player p = (Player) e.getEntity();
 				//на арене ли игрок?
-				if (p.hasMetadata("kls") && Arena.getPlArena(p.getName()).getState() != GameState.END) {
+				final Arena ar = Arena.getPlArena(p.getName());
+				if (ar != null && ar.getState() == GameState.RUNNING) {
 					//+1 смерть игроку
 					Main.data.chngNum(p.getName(), "dths", 1);
-					final Arena ar = Arena.getPlArena(p.getName());
 					if (e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof Player) {
 						//если игрок убил игрока
 						final Player dmgr = (Player) ((EntityDamageByEntityEvent) e).getDamager();
 						dmgr.playSound(e.getEntity().getLocation(), Sound.BLOCK_ANVIL_LAND, 0.3f, 2);
 						//50 монет и 1 килл дамагеру
 						EntMeta.chngMeta(dmgr, "kls", (byte) 1);
+						ApiOstrov.addStat(dmgr, Stat.WZ_klls);
 						EntMeta.chngMoney(dmgr, (short) 50, true);
 						Main.data.chngNum(dmgr.getName(), "kls", 1);
 						if (ar.getPlTeam(p.getName()).rsps == 0) {
@@ -162,6 +166,7 @@ public class MainLis implements Listener{
 							p.teleport(ar.getPlTeam(p.getName()).getSpwn());
 							Main.nrmlzPl(p);
 							p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 1000000, 0, true, false));
+							ApiOstrov.addStat(p, Stat.WZ_dths);
 							//инфа
 							for (final String s : ar.getPls()) {
 								Bukkit.getPlayer(s).sendMessage(Main.prf() + ar.getPlTeam(p.getName()).getName().substring(0, 2) + p.getName() + fromPlDie() + ar.getPlTeam(dmgr.getName()).getName().substring(0, 2) + dmgr.getName() + "§7, теряя одно из возрождений!");
@@ -172,6 +177,7 @@ public class MainLis implements Listener{
 						//если игрока убил игрок с лука
 						//50 монет и 1 килл дамагеру
 						EntMeta.chngMeta(dmgr, "kls", (byte) 1);
+						ApiOstrov.addStat(dmgr, Stat.WZ_klls);
 						EntMeta.chngMoney(dmgr, (short) 50, true);
 						Main.data.chngNum(dmgr.getName(), "kls", 1);
 						if (ar.getPlTeam(p.getName()).rsps == 0) {
@@ -182,6 +188,7 @@ public class MainLis implements Listener{
 							p.teleport(ar.getPlTeam(p.getName()).getSpwn());
 							Main.nrmlzPl(p);
 							p.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 1000000, 0, true, false));
+							ApiOstrov.addStat(p, Stat.WZ_dths);
 							//инфа
 							for (final String s : ar.getPls()) {
 								Bukkit.getPlayer(s).sendMessage(Main.prf() + ar.getPlTeam(p.getName()).getName().substring(0, 2) + p.getName() + fromPlDie() + ar.getPlTeam(dmgr.getName()).getName().substring(0, 2) + dmgr.getName() + "§7, теряя одно из возрождений!");
@@ -214,7 +221,11 @@ public class MainLis implements Listener{
 					dmgr.playSound(e.getEntity().getLocation(), Sound.BLOCK_ANVIL_LAND, 0.3f, 2);
 					//монеты дамагеру
 					if (e.getEntity().hasMetadata("lvl")) {
-						EntMeta.chngMoney(dmgr, (short) (e.getEntity().getMetadata("lvl").get(0).asByte() * 5 + 5), true);
+						final Arena ar = Arena.getPlArena(dmgr.getName());
+						if (ar != null && ar.getState() == GameState.RUNNING) {
+							ApiOstrov.addStat(dmgr, Stat.WZ_mbs);
+							EntMeta.chngMoney(dmgr, (short) (e.getEntity().getMetadata("lvl").get(0).asByte() * 5 + 5), true);
+						}
 					}
 					e.getEntity().remove();
 				} else if (((EntityDamageByEntityEvent) e).getDamager() instanceof Projectile && ((Projectile) ((EntityDamageByEntityEvent) e).getDamager()).getShooter() instanceof Player) {
@@ -222,7 +233,11 @@ public class MainLis implements Listener{
 					dmgr.playSound(e.getEntity().getLocation(), Sound.BLOCK_ANVIL_LAND, 0.3f, 2);
 					//монеты дамагеру
 					if (e.getEntity().hasMetadata("lvl")) {
-						EntMeta.chngMoney(dmgr, (short) (e.getEntity().getMetadata("lvl").get(0).asByte() * 5 + 5), true);
+						final Arena ar = Arena.getPlArena(dmgr.getName());
+						if (ar != null && ar.getState() == GameState.RUNNING) {
+							ApiOstrov.addStat(dmgr, Stat.WZ_mbs);
+							EntMeta.chngMoney(dmgr, (short) (e.getEntity().getMetadata("lvl").get(0).asByte() * 5 + 5), true);
+						}
 					}
 					e.getEntity().remove();
 				}
@@ -238,7 +253,12 @@ public class MainLis implements Listener{
 			if (p.hasMetadata("kls") && Arena.getPlArena(p.getName()).getState() != GameState.END) {
 				//если игрок бьет тиммейта
 				final Arena ar = Arena.getPlArena(p.getName());
-				e.setCancelled(e instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) e).getDamager() instanceof Player && ar.getPlTeam(p.getName()).getName().equalsIgnoreCase(ar.getPlTeam(((EntityDamageByEntityEvent) e).getDamager().getName()).getName()));
+				if (e instanceof EntityDamageByEntityEvent) {
+					e.setCancelled(((EntityDamageByEntityEvent) e).getDamager() instanceof Player && ar.getPlTeam(p.getName()).getName().equalsIgnoreCase(ar.getPlTeam(((EntityDamageByEntityEvent) e).getDamager().getName()).getName()));
+				} else if (e.getCause() == DamageCause.FIRE_TICK) {
+					e.setCancelled(true);
+					p.setFireTicks(0);
+				}
 			} else {
 				//если игрок в лобби и его бьет билдер
 				e.setCancelled(!(e instanceof EntityDamageByEntityEvent) || !(((EntityDamageByEntityEvent) e).getDamager() instanceof Player) || !((EntityDamageByEntityEvent) e).getDamager().hasPermission("ostrov.builder"));
@@ -275,17 +295,20 @@ public class MainLis implements Listener{
 						}
 						continue;
 					}
+					final Arena rar;
 					switch (ar.getState()) {
 					case LOBBY_WAIT:
 						sendSpigotMsg(Main.prf().replace('[', '<').replace(']', '>') + "§7[§6" + ar.getName() + "§7] §2" + snd.getName() + " §7≫ " + e.getMessage(), rec);
 						break;
 					case RUNNING:
-						if (Arena.getPlArena(rec.getName()).getName().equalsIgnoreCase(ar.getName()) && ar.getPlTeam(rec.getName()).getName().equalsIgnoreCase(ar.getPlTeam(snd.getName()).getName())) {
+						rar = Arena.getPlArena(rec.getName());
+						if (rar != null && rar.getName().equalsIgnoreCase(ar.getName()) && ar.getPlTeam(rec.getName()).getName().equalsIgnoreCase(ar.getPlTeam(snd.getName()).getName())) {
 							sendSpigotMsg(Main.prf().replace('[', '<').replace(']', '>') + ar.getPlTeam(snd.getName()).getName().substring(0, 2) + " " + snd.getName() + " §7≫ " + e.getMessage(), rec);
 						}
 						break;
 					case END:
-						if (Arena.getPlArena(rec.getName()).getName().equalsIgnoreCase(ar.getName()) || ar.getSpcs().contains(rec.getName())) {
+						rar = Arena.getPlArena(rec.getName());
+						if ((rar != null && Arena.getPlArena(rec.getName()).getName().equalsIgnoreCase(ar.getName())) || ar.getSpcs().contains(rec.getName())) {
 							sendSpigotMsg(Main.prf().replace('[', '<').replace(']', '>') + 
 								"§7[" + ar.getPlTeam(snd.getName()).getName() + "§7] " + 
 								snd.getName() + " ≫ " + e.getMessage().replaceFirst("!", ""), rec);
@@ -363,25 +386,7 @@ public class MainLis implements Listener{
 		}
 	}
 	
-	public static void sendSpigotMsg(String msg, Player p) {
+	public static void sendSpigotMsg(final String msg, final Player p) {
 		p.spigot().sendMessage(new TextComponent(msg));
-	}
-
-	public static String getTopGroup(final Oplayer op) {
-		if (op.groups.contains("xpanitely")) {
-			return "Хранитель";
-		} else if (op.groups.contains("builder")) {
-			return "Строитель";
-		} else if (op.groups.contains("supermoder")) {
-			return "Архангел";
-		} else if (op.groups.contains("moder-spy")) {
-			return "Ангел";
-		} else if (op.groups.contains("moder")) {
-			return "Модератор";
-		} else if (op.groups.contains("mchat")) {
-			return "Чат-Модер";
-		} else {
-			return "N";
-		}
 	}
 }

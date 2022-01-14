@@ -44,6 +44,7 @@ import me.Romindous.WarZone.Utils.Inventories;
 import me.Romindous.WarZone.Utils.Translates;
 import net.minecraft.EnumChatFormat;
 import ru.komiss77.ApiOstrov;
+import ru.komiss77.enums.Stat;
 
 public class Arena {
 
@@ -77,12 +78,14 @@ public class Arena {
 		this.smg = Bukkit.getScoreboardManager();
 		final ConfigurationSection cs = ars.getConfigurationSection("arenas." + name);
 		//ископаемые блоки, ресурсы, и покупаемые блоки
-		this.mnbls = new Material[] {Material.getMaterial(cs.getString("mnbl").split(":")[0]), 
-			Material.getMaterial(cs.getString("mnbl").split(":")[1]), 
-			Material.getMaterial(cs.getString("mnbl").split(":")[2])};
-		this.recs = new Material[] {Material.getMaterial(cs.getString("recs").split(":")[0]), 
-			Material.getMaterial(cs.getString("recs").split(":")[1]), 
-			Material.getMaterial(cs.getString("recs").split(":")[2])};
+		final String[] mnar = cs.getString("mnbl").split(":");
+		this.mnbls = new Material[] {Material.getMaterial(mnar[0]), 
+			Material.getMaterial(mnar[1]), 
+			Material.getMaterial(mnar[2])};
+		final String[] rcar = cs.getString("recs").split(":");
+		this.recs = new Material[] {Material.getMaterial(rcar[0]), 
+			Material.getMaterial(rcar[1]), 
+			Material.getMaterial(rcar[2])};
 		//предмет для копания
 		this.tl = ars.getString("arenas." + name + ".tl");
 		//заменяем прошлые цвета, если есть
@@ -342,6 +345,9 @@ public class Arena {
 		}
 		//записываем проигрыш
 		Main.data.chngNum(name, "lss", 1);
+		ApiOstrov.addStat(Bukkit.getPlayer(name), Stat.WZ_dths);
+		ApiOstrov.addStat(Bukkit.getPlayer(name), Stat.WZ_game);
+		ApiOstrov.addStat(Bukkit.getPlayer(name), Stat.WZ_loose);
 		//--
 		//инфа
 		ApiOstrov.sendArenaData(this.name, ru.komiss77.enums.GameState.ИГРА, "§7[§2Поле Брани§7]", "§cИдет Игра", " ", "§7Игроков: " + pls.size(), "", pls.size());
@@ -446,6 +452,8 @@ public class Arena {
 			if (oneTmLft() != null) {
 				task.cancel();
 				countEnd(new Random(), oneTmLft().name);
+			} else {
+				updTmsSb();
 			}
 			break;
 		case END:
@@ -649,6 +657,8 @@ public class Arena {
 						}
 						//записываем проигрыш
 						Main.data.chngNum(name, "lss", 1);
+						ApiOstrov.addStat(Bukkit.getPlayer(name), Stat.WZ_game);
+						ApiOstrov.addStat(Bukkit.getPlayer(name), Stat.WZ_loose);
 						//таб
 						for (final Player pl : Bukkit.getOnlinePlayers()) {
 							pl.setPlayerListFooter("§7Сейчас в игре: §2" + MainLis.getPlaying() + "§7 человек!");
@@ -712,33 +722,42 @@ public class Arena {
 		if (wntm.isEmpty()) {
 			for (final String s : pls) {
 				Bukkit.getPlayer(s).sendMessage(Main.prf() + "Результат: Ничья!");
+				ApiOstrov.addStat(Bukkit.getPlayer(s), Stat.WZ_game);
+				endScore(s, wntm);
 			}
 			for (final String s : spcs) {
-				Bukkit.getPlayer(s).sendMessage(Main.prf() + "Результат: Ничья!");
+				final Player p = Bukkit.getPlayer(s);
+				if (p != null) {
+					p.sendMessage(Main.prf() + "Результат: Ничья!");
+				}
 			}
 		} else {
 			for (final String s : pls) {
-				Bukkit.getPlayer(s).sendMessage(Main.prf() + wntm + "§7 комманда победила в этой битве!");
-				Bukkit.getPlayer(s).sendMessage("§7-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+				final Player p = Bukkit.getPlayer(s);
+				p.sendMessage(Main.prf() + wntm + "§7 комманда победила в этой битве!");
+				p.sendMessage("§7-=-=-=-=-=-=-=-=-=-=-=-=-=-");
 				for (final String wn : pls) {
-					Bukkit.getPlayer(s).sendMessage(wntm.substring(0, 2) + wn + "§7 - §2" + Bukkit.getPlayer(wn).getMetadata("kls").get(0).asByte() + "§7 убийств");
+					p.sendMessage(wntm.substring(0, 2) + wn + "§7 - §2" + Bukkit.getPlayer(wn).getMetadata("kls").get(0).asByte() + "§7 убийств");
 				}
-				Bukkit.getPlayer(s).sendMessage("§7-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+				p.sendMessage("§7-=-=-=-=-=-=-=-=-=-=-=-=-=-");
 				Main.data.chngNum(s, "wns", 1);
+				ApiOstrov.addStat(p, Stat.WZ_game);
+				ApiOstrov.addStat(p, Stat.WZ_win);
+				endScore(s, wntm);
 			}
 			for (final String s : spcs) {
-				Bukkit.getPlayer(s).sendMessage(Main.prf() + wntm + "§7 комманда победила в этой битве!");
-				Bukkit.getPlayer(s).sendMessage("§7-=-=-=-=-=-=-=-=-=-=-=-=-=-");
-				for (final String wn : pls) {
-					Bukkit.getPlayer(s).sendMessage(wntm.substring(0, 2) + wn + "§7 - §2" + Bukkit.getPlayer(wn).getMetadata("kls").get(0).asByte() + "§7 убийств");
+				final Player p = Bukkit.getPlayer(s);
+				if (p != null) {
+					p.sendMessage(Main.prf() + wntm + "§7 комманда победила в этой битве!");
+					p.sendMessage("§7-=-=-=-=-=-=-=-=-=-=-=-=-=-");
+					for (final String wn : pls) {
+						p.sendMessage(wntm.substring(0, 2) + wn + "§7 - §2" + Bukkit.getPlayer(wn).getMetadata("kls").get(0).asByte() + "§7 убийств");
+					}
+					p.sendMessage("§7-=-=-=-=-=-=-=-=-=-=-=-=-=-");
 				}
-				Bukkit.getPlayer(s).sendMessage("§7-=-=-=-=-=-=-=-=-=-=-=-=-=-");
 			}
 		}
 		//--
-		for (final String s : pls) {
-			endScore(s, wntm);
-		}
 		task = new BukkitRunnable() {
 		
 			@Override

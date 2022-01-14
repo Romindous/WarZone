@@ -457,7 +457,7 @@ public class Inventories {
 				it = new ItemStack(Material.SPLASH_POTION);
 				pm = (PotionMeta) it.getItemMeta();
 				pm.setBasePotionData(new PotionData(PotionType.SPEED));
-				pm.addCustomEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 200, 1), true);
+				pm.addCustomEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 500, 1), true);
 				pm.setDisplayName("§eЗелье Ускорения");
 				pm.setLore(getCnsPrs(cs, "xtr.spd", "§eУскоряет §7вас!"));
 				it.setItemMeta(pm);

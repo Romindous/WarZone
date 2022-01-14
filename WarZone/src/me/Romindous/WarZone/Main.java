@@ -2,6 +2,7 @@ package me.Romindous.WarZone;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -40,18 +41,20 @@ import me.Romindous.WarZone.SQL.MySQL;
 import me.Romindous.WarZone.Utils.EntMeta;
 import me.Romindous.WarZone.Utils.Inventories;
 import me.Romindous.WarZone.Utils.TitleManager;
+import net.kyori.adventure.text.Component;
 import net.minecraft.EnumChatFormat;
+import net.minecraft.server.dedicated.DedicatedServer;
 import me.Romindous.WarZone.SQL.SQLGet;
 import ru.komiss77.ApiOstrov;
 
 public class Main extends JavaPlugin{
 	
-	public static MySQL sql;
 	public static Main plug;
 	public static String tbl;
 	public static SQLGet data;
 	public static File folder;
 	public static Location lobby;
+	public static DedicatedServer ds;
 	public static byte GPTmMin;
 	public static byte gmTmMin;
 	public static byte blkkd;
@@ -78,6 +81,11 @@ public class Main extends JavaPlugin{
 		getServer().getConsoleSender().sendMessage(ChatColor.DARK_GREEN + "WarZone is ready!");
 		getCommand("wz").setExecutor(new WZCmd(this));
 		plug = this;
+		try {
+	    	ds = (DedicatedServer) getServer().getClass().getMethod("getServer").invoke(getServer());
+	    } catch (IllegalAccessException|InvocationTargetException|NoSuchMethodException e) {
+	    	e.printStackTrace();
+	    }
 		getServer().getPluginManager().registerEvents(new MainLis(), this);
 		getServer().getPluginManager().registerEvents(new InterractLis(), this);
 		getServer().getPluginManager().registerEvents(new InventoryLis(), this);
@@ -103,21 +111,8 @@ public class Main extends JavaPlugin{
 	}
 	
 	public static void dataConn() {
-		Bukkit.getScheduler().runTaskTimer(plug, new Runnable() {
-			@Override
-			public void run() {
-				(sql = new MySQL()).connTo();
-			}
-		}, 0, 36000);
-		Bukkit.getScheduler().runTaskLater(plug, new Runnable() {
-			@Override
-			public void run() {
-				if (sql.isConOn()) {
-					Bukkit.getLogger().info("Reconnected to a database! :D");
-					(data = new SQLGet()).mkTbl("wzpls", "name", "kls", "dths", "rsps", "wns", "lss", "prm");
-				}
-			}
-		}, 5);
+		Bukkit.getLogger().info("Reconnected to a database! :D");
+		(data = new SQLGet()).mkTbl("wzpls", "name", "kls", "dths", "rsps", "wns", "lss", "prm");
 	}
 	
 	public void onDisable() {
@@ -201,19 +196,25 @@ public class Main extends JavaPlugin{
 		p.getInventory().setItem(0, Inventories.mkItm(Material.TRIDENT, "§6Выбор Карты", true));
 		p.getInventory().setItem(8, Inventories.mkItm(Material.MAGMA_CREAM, "§4Выход в Лобби", true));
 		final String prm = data.getString(p.getName(), "prm");
-		p.setPlayerListName("§7[§5ЛОББИ§7] " + p.getName() + (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""));
-		
-		TitleManager.sendNmTg(p.getName(), "§7[§5ЛОББИ§7] ", (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""), EnumChatFormat.c);
-        
-		for (final Player other : Bukkit.getOnlinePlayers()) {
-			if (!other.hasMetadata("kls")) {
-				p.showPlayer(plug, other);
-				other.showPlayer(plug, p);
-			} else {
-				p.hidePlayer(plug, other);
-				other.hidePlayer(plug, p);
+		p.playerListName(Component.text("§7[§5ЛОББИ§7] " + p.getName() + (prm.length() > 1 ? " §7(§e" + prm + "§7)" : "")));
+
+        Bukkit.getScheduler().runTaskLater(plug, new Runnable() {
+			@Override
+			public void run() {
+				for (final Player other : Bukkit.getOnlinePlayers()) {
+					if (other.hasMetadata("kls")) {
+						p.hidePlayer(plug, other);
+						other.hidePlayer(plug, p);
+					} else {
+						final Arena ar = Arena.getPlArena(other.getName());
+						final String prm = data.getString(other.getName(), "prm");
+						TitleManager.sendNmTg(other.getName(), "§7[" + (ar == null ? "§5ЛОББИ" : "§6" + ar.getName()) + "§7] ", (prm.length() > 1 ? " §7(§e" + prm + "§7)" : ""), EnumChatFormat.c);
+						p.showPlayer(plug, other);
+						other.showPlayer(plug, p);
+					}
+				}
 			}
-		}
+		}, 4);
 		if (lobby != null) {
 			p.teleport(lobby);
 		}
@@ -224,7 +225,7 @@ public class Main extends JavaPlugin{
 		try {
 			final ResultSet rs = data.exctStrStmt("SELECT * FROM " + Main.tbl + " WHERE NAME=?", name).executeQuery(); rs.next();
 			final Scoreboard sb = Bukkit.getScoreboardManager().getNewScoreboard();
-			final Objective ob = sb.registerNewObjective("Поле Брани", "", "§7[§2Поле Брани§7]");
+			final Objective ob = sb.registerNewObjective("Поле Брани", "", Component.text("§7[§2Поле Брани§7]"));
 			ob.setDisplaySlot(DisplaySlot.SIDEBAR);
 			ob.getScore("§7Карта: §5Лобби")
 				.setScore(8);
@@ -297,7 +298,7 @@ public class Main extends JavaPlugin{
 		Arrays.fill(ar.recs, null);
 		ar = null;
 		for (Player pl : Bukkit.getOnlinePlayers()) {
-			pl.setPlayerListFooter("§7Сейчас в игре: §2" + MainLis.getPlaying() + "§7 человек!");
+			pl.sendPlayerListFooter(Component.text("§7Сейчас в игре: §2" + MainLis.getPlaying() + "§7 человек!"));
 		}
 	}
 	
@@ -323,13 +324,13 @@ public class Main extends JavaPlugin{
 	public static void crtSbdTm(final Scoreboard sb, final String nm, final String prf, final String val, final String sfx) {
 		final org.bukkit.scoreboard.Team tm = sb.registerNewTeam(nm);
 		tm.addEntry(val);
-		tm.setPrefix(prf);
-		tm.setSuffix(sfx);
+		tm.prefix(Component.text(prf));
+		tm.suffix(Component.text(sfx));
 	}
 	
 	public static void chgSbdTm(final Scoreboard sb, final String nm, final String prf, final String sfx) {
 		final org.bukkit.scoreboard.Team tm = sb.getTeam(nm);
-		tm.setPrefix(prf);
-		tm.setSuffix(sfx);
+		tm.prefix(Component.text(prf));
+		tm.suffix(Component.text(sfx));
 	}
 }

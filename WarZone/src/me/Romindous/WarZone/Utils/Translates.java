@@ -1,11 +1,11 @@
 package me.Romindous.WarZone.Utils;
 
+import java.util.Collection;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.block.Biome;
 import org.bukkit.entity.Villager.Type;
-
-import ru.komiss77.modules.player.Oplayer;
 
 public class Translates {
 
@@ -129,21 +129,21 @@ public class Translates {
 		return Color.WHITE;
 	}
 
-	public static String getTopGrp(final Oplayer op) {
-		if (op.groups.contains("xpanitely")) {
+	public static String getTopGroup(final Collection<String> grps) {
+		if (grps.contains("xpanitely")) {
 			return "Хранитель";
-		} else if (op.groups.contains("builder")) {
+		} else if (grps.contains("builder")) {
 			return "Строитель";
-		} else if (op.groups.contains("supermoder")) {
+		} else if (grps.contains("supermoder")) {
 			return "Архангел";
-		} else if (op.groups.contains("moder-spy")) {
+		} else if (grps.contains("moder-spy")) {
 			return "Ангел";
-		} else if (op.groups.contains("moder")) {
+		} else if (grps.contains("moder")) {
 			return "Модератор";
-		} else if (op.groups.contains("mchat")) {
+		} else if (grps.contains("mchat")) {
 			return "Чат-Модер";
 		} else {
-			return null;
+			return "N";
 		}
 	}
 
@@ -171,55 +171,29 @@ public class Translates {
 	public static Type getBmVllTp(final Biome b) {
 		switch (b) {
 		case BADLANDS:
-		case BADLANDS_PLATEAU:
 		case SAVANNA:
-		case SHATTERED_SAVANNA:
-		case SHATTERED_SAVANNA_PLATEAU:
 		case SAVANNA_PLATEAU:
 		case CRIMSON_FOREST:
-		case WOODED_BADLANDS_PLATEAU:
 		case ERODED_BADLANDS:
 			return Type.SAVANNA;
 		case BEACH:
 		case DESERT:
-		case DESERT_HILLS:
-		case DESERT_LAKES:
 		case NETHER_WASTES:
 		case SOUL_SAND_VALLEY:
 			return Type.DESERT;
 		case BAMBOO_JUNGLE:
-		case BAMBOO_JUNGLE_HILLS:
 		case JUNGLE:
-		case JUNGLE_EDGE:
-		case JUNGLE_HILLS:
-		case MUSHROOM_FIELD_SHORE:
 		case MUSHROOM_FIELDS:
 			return Type.JUNGLE;
 		case SWAMP:
-		case SWAMP_HILLS:
 		case DARK_FOREST:
-		case DARK_FOREST_HILLS:
 		case WARPED_FOREST:
 		case RIVER:
 			return Type.SWAMP;
-		case GIANT_SPRUCE_TAIGA:
-		case GIANT_SPRUCE_TAIGA_HILLS:
-		case GIANT_TREE_TAIGA:
-		case GIANT_TREE_TAIGA_HILLS:
-		case MOUNTAIN_EDGE:
-		case GRAVELLY_MOUNTAINS:
-		case MOUNTAINS:
-		case WOODED_MOUNTAINS:
 		case TAIGA:
-		case TAIGA_HILLS:
-		case TAIGA_MOUNTAINS:
 			return Type.TAIGA;
 		case SNOWY_BEACH:
-		case SNOWY_MOUNTAINS:
 		case SNOWY_TAIGA:
-		case SNOWY_TAIGA_HILLS:
-		case SNOWY_TAIGA_MOUNTAINS:
-		case SNOWY_TUNDRA:
 		case ICE_SPIKES:
 			return Type.SNOW;
 		default:
