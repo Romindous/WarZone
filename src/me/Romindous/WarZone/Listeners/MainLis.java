@@ -35,7 +35,6 @@ import me.Romindous.WarZone.Main;
 import me.Romindous.WarZone.Game.Arena;
 import me.Romindous.WarZone.Game.GameState;
 import me.Romindous.WarZone.Utils.EntMeta;
-import me.clip.deluxechat.events.DeluxeChatEvent;
 import net.kyori.adventure.text.Component;
 import net.md_5.bungee.api.chat.TextComponent;
 import ru.komiss77.ApiOstrov;
@@ -345,7 +344,7 @@ public class MainLis implements Listener{
         e.getRecipients().clear();
     }
 
-	@EventHandler
+	/*@EventHandler
     public void Dchat(final DeluxeChatEvent e) {
         final Player p = e.getPlayer();
         final Arena ar = Arena.getPlArena(p.getName());
@@ -363,7 +362,7 @@ public class MainLis implements Listener{
         if (ar != null) {
             e.getDeluxeFormat().setPrefix(Main.prf() + "§7<§2" + ar.getName() + "§7> ");
         }
-    }
+    }*/
 	
 	public static byte getPlaying() {
 		byte in = 0;

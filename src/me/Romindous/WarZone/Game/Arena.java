@@ -862,7 +862,7 @@ public class Arena {
 			.setScore(2);
 		ob.getScore(" ").setScore(1);
 		
-		ob.getScore("§e      ostrov77.su")
+		ob.getScore("§e      ostrov77.ru")
 			.setScore(0);
 		p.setScoreboard(sb);
 	}
@@ -896,7 +896,7 @@ public class Arena {
 			.setScore(2);
 		ob.getScore(" ").setScore(1);
 		
-		ob.getScore("§e       ostrov77.su")
+		ob.getScore("§e       ostrov77.ru")
 			.setScore(0);
 		p.setScoreboard(sb);
 	}
@@ -947,7 +947,7 @@ public class Arena {
 			.setScore(i); i--;
 		ob.getScore(" ").setScore(i); i--;
 		
-		ob.getScore("§e       ostrov77.su")
+		ob.getScore("§e       ostrov77.ru")
 			.setScore(i);
 		Bukkit.getPlayer(name).setScoreboard(sb);
 	}
@@ -972,7 +972,7 @@ public class Arena {
 		ob.getScore(" ")
 			.setScore(1);
 		
-		ob.getScore("§e       ostrov77.su")
+		ob.getScore("§e       ostrov77.ru")
 			.setScore(0);
 		Bukkit.getPlayer(name).setScoreboard(sb);
 	}
