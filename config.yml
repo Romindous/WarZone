@@ -1,0 +1,46 @@
+spawns:
+  mbPrd: 5
+  tstRds: 5
+  enchThr: 4
+  armrThr: 4
+  flwRng: 6
+  maxlvl: 9
+  lvlbfr: 0.003
+  forArmrScr: 0.8
+  forWpnScr: 0.6
+  forHlthScr: 1.0
+  forSpdScr: 0.005
+  forEnchScr: 0.5
+setup:
+  gmTmMin: 30
+  GPTmMin: 28
+  mxEnchLvl: 5
+  clrRng: 32
+  blkkd: 15
+trade:
+  sword1: f16
+  sword2: s20
+  sword3: t24
+  cross: t16 s16
+  arrow: f4
+  frwork: t2 s2
+  tool1: f16
+  tool2: f8 s8
+  tool3: s16
+  shield: f8 t8
+  food1: f2
+  food2: s2 f2
+  food3: s4
+  food4: t2 s2
+  food5: t16
+  armor1: f20
+  armor2: s15 f15
+  armor3: s40
+  armor4: t25 s25
+  armor5: t60
+  ench: 30
+  dlvl: 5
+  resp: 100
+  health: 15
+  speed: 10
+  strong: 40
