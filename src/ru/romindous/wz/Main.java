@@ -9,10 +9,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import ru.komiss77.ApiOstrov;
+import ru.komiss77.enums.Game;
 import ru.komiss77.enums.Stat;
+import ru.komiss77.modules.games.GM;
 import ru.komiss77.modules.player.PM;
 import ru.komiss77.modules.world.WXYZ;
-import ru.komiss77.utils.TCUtils;
+import ru.komiss77.utils.StringUtil;
+import ru.komiss77.utils.TCUtil;
 import ru.romindous.wz.Game.Arena;
 import ru.romindous.wz.Game.GameState;
 import ru.romindous.wz.Game.PlWarrior;
@@ -64,12 +67,12 @@ public class Main extends JavaPlugin {
     public void onEnable() {
         //Ostrov things
         PM.setOplayerFun(p -> new PlWarrior(p), true);
-        TCUtils.N = "§7";
-        TCUtils.P = "§d";
-        TCUtils.A = "§3";
+        TCUtil.N = "§7";
+        TCUtil.P = "§d";
+        TCUtil.A = "§3";
 
-        FULL = bfr('[', TCUtils.P + "Поле" + TCUtils.A + "Брани", ']');
-        PRFX = bfr('[', TCUtils.P + "П" + TCUtils.A + "Б", ']');
+        FULL = bfr('[', TCUtil.P + "Поле" + TCUtil.A + "Брани", ']');
+        PRFX = bfr('[', TCUtil.P + "П" + TCUtil.A + "Б", ']');
 
         getServer().getConsoleSender().sendMessage("§2WarZone is ready!");
         plug = this;
@@ -149,7 +152,7 @@ public class Main extends JavaPlugin {
                     final Setup stp = new Setup(ars.getConfigurationSection("arenas." + s));
                     nonactivearenas.put(stp.nm, stp);
                     if (stp.fin) {
-                        ApiOstrov.sendArenaData(stp.nm, ru.komiss77.enums.GameState.ОЖИДАНИЕ, "§7[§2Поле Брани§7]", "§2Ожидание", " ", "§7Игроков: §20§7/§2" + stp.min, "", 0);
+                        GM.sendArenaData(Game.WZ, stp.nm, ru.komiss77.enums.GameState.ОЖИДАНИЕ, 0, "§7[§2Поле Брани§7]", "§2Ожидание", " ", "§7Игроков: §20§7/§2" + stp.min);
                     }
                 }
             }
@@ -195,14 +198,14 @@ public class Main extends JavaPlugin {
         pw.team(null, p);
         pw.arena(null);
         p.getInventory().clear();
-        p.getInventory().setItem(0, Inventories.mkItm(Material.TRIDENT, TCUtils.P + "Выбор Карты", true));
+        p.getInventory().setItem(0, Inventories.mkItm(Material.TRIDENT, TCUtil.P + "Выбор Карты", true));
         p.getInventory().setItem(8, Inventories.mkItm(Material.MAGMA_CREAM, "§4Выход в Лобби", true));
         updateScore(pw);
         inGameCnt();
         if (lobby != null) p.teleport(lobby.getCenterLoc());
         final String prm = pw.getTopPerm();
-        pw.taq(bfr('[', TCUtils.A + "ЛОББИ", ']'),
-            TCUtils.P, (prm.isEmpty() ? "" : afr('(', "§e" + prm, ')')));
+        pw.taq(bfr('[', TCUtil.A + "ЛОББИ", ']'),
+            TCUtil.P, (prm.isEmpty() ? "" : afr('(', "§e" + prm, ')')));
         for (final Player op : Bukkit.getOnlinePlayers()) {
             if (p.getEntityId() == op.getEntityId()) continue;
             p.showPlayer(plug, op);
@@ -218,30 +221,30 @@ public class Main extends JavaPlugin {
     public static void inGameCnt() {
         int i = 0;
         for (final Arena ar : Main.activearenas.values()) i+=ar.getPls().size();
-        final Component c = TCUtils.format(TCUtils.N + "Сейчас в игре: " + TCUtils.P + i + TCUtils.N + " человек!");
+        final Component c = TCUtil.form(TCUtil.N + "Сейчас в игре: " + TCUtil.P + i + TCUtil.N + " человек!");
         for (final Player pl : Bukkit.getOnlinePlayers()) pl.sendPlayerListFooter(c);
     }
 
     public static void updateScore(final PlWarrior pw) {
         pw.score.getSideBar().reset().title(Main.FULL)
             .add(" ")
-            .add(TCUtils.N + "Карта: " + TCUtils.A + "ЛОББИ")
-            .add(TCUtils.A + "=-=-=-=-=-=-=-")
-            .add(TCUtils.N + "Мобов убито: " + TCUtils.P + pw.getStat(Stat.WZ_mbs))
+            .add(TCUtil.N + "Карта: " + TCUtil.A + "ЛОББИ")
+            .add(TCUtil.A + "=-=-=-=-=-=-=-")
+            .add(TCUtil.N + "Мобов убито: " + TCUtil.P + pw.getStat(Stat.WZ_mbs))
             .add(" ")
-            .add(TCUtils.A + "Игр " + TCUtils.N + "всего:")
-            .add(TCUtils.N + "Выйграно: " + TCUtils.P + pw.getStat(Stat.WZ_win))
-            .add(TCUtils.N + "Проиграно: " + TCUtils.P + pw.getStat(Stat.WZ_loose))
+            .add(TCUtil.A + "Игр " + TCUtil.N + "всего:")
+            .add(TCUtil.N + "Выйграно: " + TCUtil.P + pw.getStat(Stat.WZ_win))
+            .add(TCUtil.N + "Проиграно: " + TCUtil.P + pw.getStat(Stat.WZ_loose))
             .add(" ")
-            .add(TCUtils.A + "=-=-=-=-=-=-=-")
-            .add(TCUtils.N + "(" + TCUtils.P + "К" + TCUtils.N + "/" + TCUtils.A + "Д" + TCUtils.N + "): " + TCUtils.P +
-                    ApiOstrov.toSigFigs((float) pw.getStat(Stat.WZ_klls) / (float) pw.getStat(Stat.WZ_dths), (byte) 2))
+            .add(TCUtil.A + "=-=-=-=-=-=-=-")
+            .add(TCUtil.N + "(" + TCUtil.P + "К" + TCUtil.N + "/" + TCUtil.A + "Д" + TCUtil.N + "): " + TCUtil.P +
+                StringUtil.toSigFigs((float) pw.getStat(Stat.WZ_klls) / (float) pw.getStat(Stat.WZ_dths), (byte) 2))
             .add(" ")
             .add("§e    ostrov77.ru").build();
     }
 
     public static void endArena(Arena ar) {
-        ApiOstrov.sendArenaData(ar.getName(), ru.komiss77.enums.GameState.ОЖИДАНИЕ, "§7[§2Поле Брани§7]", "§2Ожидание", " ", "§7Игроков: §20§7/§2" + ar.getMin(), "", 0);
+        GM.sendArenaData(Game.WZ, ar.getName(), ru.komiss77.enums.GameState.ОЖИДАНИЕ, 0, "§7[§2Поле Брани§7]", "§2Ожидание", " ", "§7Игроков: §20§7/§2" + ar.getMin());
         for (final PlWarrior pw : ar.getSpcs().values()) {
             lobbyPlayer(pw.getPlayer(), pw);
         }
@@ -274,10 +277,10 @@ public class Main extends JavaPlugin {
     }
 
     public static String bfr(final char b, final String txt, final char d) {
-        return TCUtils.N + b + txt + TCUtils.N + d + " ";
+        return TCUtil.N + b + txt + TCUtil.N + d + " ";
     }
 
     public static String afr(final char b, final String txt, final char d) {
-        return " " + TCUtils.N + b + txt + TCUtils.N + d;
+        return " " + TCUtil.N + b + txt + TCUtil.N + d;
     }
 }

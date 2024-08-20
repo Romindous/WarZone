@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import ru.komiss77.modules.player.PM;
 import ru.komiss77.utils.ItemBuilder;
-import ru.komiss77.utils.TCUtils;
+import ru.komiss77.utils.TCUtil;
 import ru.komiss77.utils.inventory.*;
 import ru.romindous.wz.Game.Arena;
 import ru.romindous.wz.Game.PlWarrior;
@@ -40,7 +40,7 @@ public class TeamMenu implements InventoryProvider {
         l = l / tms.length;
         final int lmt = l;
         final Team pt = pw.team();
-        its.set(4, ClickableItem.of(new ItemBuilder(Material.TURTLE_HELMET).name(TCUtils.P + "Быстрый Выбор").build(), e -> {
+        its.set(4, ClickableItem.of(new ItemBuilder(Material.TURTLE_HELMET).name(TCUtil.P + "Быстрый Выбор").build(), e -> {
             for (final Team tm : tms) {
                 if (tm.pls.size() > lmt || tm.equals(pt)) continue;
                 pw.team(tm, p);
@@ -55,16 +55,16 @@ public class TeamMenu implements InventoryProvider {
             final int slt = midSlt + df + (1 + (df >> 31));
             if (tm.equals(pt)) {
                 its.set(slt, ClickableItem.empty(new ItemBuilder(Material.LEATHER_HELMET)
-                    .setColor(Color.fromRGB(tm.txc.value())).addEnchant(Enchantment.MENDING)
-                    .name(tm.name("ая", true)).addLore(tm.lore("§cТы уже в этой комманде!")).build()));
+                    .color(Color.fromRGB(tm.txc.value())).enchant(Enchantment.MENDING)
+                    .name(tm.name("ая", true)).lore(tm.lore("§cТы уже в этой комманде!")).build()));
             } else if (tm.pls.size() > lmt) {
                 its.set(slt, ClickableItem.empty(new ItemBuilder(Material.LEATHER_HELMET)
-                    .setColor(Color.fromRGB(tm.txc.value())).name(tm.name("ая", true))
-                    .addLore(tm.lore("§cCлишком много игроков!")).build()));
+                    .color(Color.fromRGB(tm.txc.value())).name(tm.name("ая", true))
+                    .lore(tm.lore("§cCлишком много игроков!")).build()));
             } else {
                 its.set(slt, ClickableItem.of(new ItemBuilder(Material.LEATHER_HELMET)
-                    .setColor(Color.fromRGB(tm.txc.value())).name(tm.name("ая", true))
-                    .addLore(tm.lore("")).build(), e -> {
+                    .color(Color.fromRGB(tm.txc.value())).name(tm.name("ая", true))
+                    .lore(tm.lore("")).build(), e -> {
                     pw.team(tm, p);
                 }));
             }

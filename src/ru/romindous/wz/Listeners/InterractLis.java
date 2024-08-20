@@ -21,8 +21,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import ru.komiss77.ApiOstrov;
 import ru.komiss77.Ostrov;
-import ru.komiss77.utils.ItemUtils;
-import ru.komiss77.utils.TCUtils;
+import ru.komiss77.utils.ItemUtil;
+import ru.komiss77.utils.TCUtil;
 import ru.romindous.wz.Game.Arena;
 import ru.romindous.wz.Game.GameState;
 import ru.romindous.wz.Main;
@@ -55,7 +55,7 @@ public class InterractLis implements Listener{
 		//если играет
 		final Arena ar = Arena.getPlArena(e.getPlayer());
 		if (ar != null) return;
-		final String inm = TCUtils.toString(e.getView().title());
+		final String inm = TCUtil.deform(e.getView().title());
 		if (inm.contains("Карты") || inm.contains("Комманды")) return;
 		e.setCancelled(!ApiOstrov.isLocalBuilder(e.getPlayer()));
 	}
@@ -83,9 +83,9 @@ public class InterractLis implements Listener{
 		case LEFT_CLICK_BLOCK:
 			final Arena ar = Arena.getPlArena(p);
 			final ItemStack it = e.getItem();
-			if (ItemUtils.isBlank(it, true)) return;
+			if (ItemUtil.isBlank(it, true)) return;
 			final String in = it.getItemMeta().hasDisplayName()
-				? TCUtils.toString(it.getItemMeta().displayName()) : "";
+				? TCUtil.deform(it.getItemMeta().displayName()) : "";
 			if (ar == null) {
 				//игрок в лобби
 				if (in.contains("Карты")) {
@@ -93,7 +93,7 @@ public class InterractLis implements Listener{
 					p.playSound(p.getLocation(), Sound.BLOCK_BEEHIVE_EXIT, 80, 1);
 					final Inventory inv = Bukkit.createInventory(p,
 						9 * (Main.nonactivearenas.size() / 9 + 3),
-						TCUtils.format(TCUtils.P + "Меню выбора Карты"));
+						TCUtil.form(TCUtil.P + "Меню выбора Карты"));
 					inv.setContents(Inventories.fillArInv(9 * (Main.nonactivearenas.size() / 9 + 3)));
 					p.openInventory(inv);
 				} else if (in.contains("Выход")) {
@@ -134,10 +134,10 @@ public class InterractLis implements Listener{
 				final ItemStack it = e.getBlock().getDrops().iterator().next();
 				final ItemMeta im = it.getItemMeta();
 				im.displayName(switch (i) {
-					case 1 -> TCUtils.format("§3Нормальный Материал");
-					case 2 -> TCUtils.format("§2Прочный Материал");
-					case 0 -> TCUtils.format("§aХрупкий Материал");
-                    default -> TCUtils.format("§e??? Материал");
+					case 1 -> TCUtil.form("§3Нормальный Материал");
+					case 2 -> TCUtil.form("§2Прочный Материал");
+					case 0 -> TCUtil.form("§aХрупкий Материал");
+                    default -> TCUtil.form("§e??? Материал");
                 });
 				it.setItemMeta(im);
 				p.getInventory().addItem(it);
@@ -161,7 +161,7 @@ public class InterractLis implements Listener{
 				return;
 			}
 
-			final Inventory inv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Выбор Магазина"));
+			final Inventory inv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Выбор Магазина"));
 			inv.setContents(Inventories.fillShpInv(Arena.getPlArena(p)));
 			p.openInventory(inv);
 		}

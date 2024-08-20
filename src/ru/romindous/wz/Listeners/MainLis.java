@@ -21,14 +21,16 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import ru.komiss77.ApiOstrov;
-import ru.komiss77.Perm;
 import ru.komiss77.enums.Data;
 import ru.komiss77.enums.Stat;
 import ru.komiss77.events.ChatPrepareEvent;
 import ru.komiss77.events.LocalDataLoadEvent;
 import ru.komiss77.listener.ChatLst;
 import ru.komiss77.modules.player.PM;
-import ru.komiss77.utils.TCUtils;
+import ru.komiss77.modules.player.Perm;
+import ru.komiss77.utils.EntityUtil;
+import ru.komiss77.utils.StringUtil;
+import ru.komiss77.utils.TCUtil;
 import ru.romindous.wz.Game.Arena;
 import ru.romindous.wz.Game.GameState;
 import ru.romindous.wz.Game.PlWarrior;
@@ -43,7 +45,7 @@ public class MainLis implements Listener {
 	public void onJoin(final LocalDataLoadEvent e) {
 		final Player p = e.getPlayer();
 		Main.lobbyPlayer(p, (PlWarrior) e.getOplayer());
-        p.sendPlayerListHeader(TCUtils.format(Main.FULL
+        p.sendPlayerListHeader(TCUtil.form(Main.FULL
 			+ "\n" + switch (Main.srnd.nextInt(4)) {
 			case 0 -> "Добро пожаловать!";
 			case 1 -> "Приятной игры!";
@@ -95,7 +97,7 @@ public class MainLis implements Listener {
 	@EventHandler
 	public void onDeath(final EntityDeathEvent e) {
 		final LivingEntity ent = e.getEntity();
-		final LivingEntity dmgr = ApiOstrov.lastDamager(ent, true);
+		final LivingEntity dmgr = EntityUtil.lastDamager(ent, true);
 		//если игрок убивает моба
 		if (dmgr instanceof final Player dp) {
 			final PlWarrior dpw = PM.getOplayer(dp, PlWarrior.class);
@@ -138,7 +140,7 @@ public class MainLis implements Listener {
 	
 	@EventHandler(ignoreCancelled = false, priority = EventPriority.LOW)
 	public void onDamage(final EntityDamageEvent e) {
-		final LivingEntity dmgr = ApiOstrov.getDamager(e, true);
+		final LivingEntity dmgr = EntityUtil.getDamager(e, true);
 		if (dmgr == null) {
 			if (e.getEntity() instanceof final Player p) {
 				final PlWarrior pw = PM.getOplayer(p, PlWarrior.class);
@@ -188,10 +190,10 @@ public class MainLis implements Listener {
 				e.setCancelled(true);
 				e.setDamage(0d);
 				if (dpw == null) {
-					final String enm = TCUtils.toString(dmgr.customName());
-					ar.killWar(p, pw, enm.isEmpty() ? TCUtils.P + ApiOstrov.nrmlzStr(dmgr.getType().toString()) : enm);
+					final String enm = TCUtil.deform(dmgr.customName());
+					ar.killWar(p, pw, enm.isEmpty() ? TCUtil.P + StringUtil.nrmlzStr(dmgr.getType().toString()) : enm);
 				} else {
-					ar.killWar(p, pw, dpw.team() == null ? TCUtils.P + dpw.nik : dpw.team().color() + dpw.nik);
+					ar.killWar(p, pw, dpw.team() == null ? TCUtil.P + dpw.nik : dpw.team().color() + dpw.nik);
 					p.getWorld().playSound(p.getLocation(), Sound.BLOCK_CHAIN_PLACE, 1f, 0.8f);
 					p.getWorld().spawnParticle(Particle.LANDING_HONEY, p.getLocation(), 40, 0.2d, 0.8d, 0.2d);
 					dpw.addStat(Stat.WZ_klls, 1);
@@ -212,9 +214,9 @@ public class MainLis implements Listener {
 		e.showLocal(true);
 		e.showSelf(false);
 		if (ar == null) {
-			final Component modMsg = TCUtils.format(Main.bfr('{', TCUtils.P + ApiOstrov.toSigFigs(
-				(float) pw.getStat(Stat.WZ_klls) / (float) pw.getStat(Stat.WZ_dths), (byte) 2), '}')
-				+ ChatLst.NIK_COLOR + p.getName() + Main.afr('[', TCUtils.A + "ЛОББИ", ']') + " §7§o≫ " + TCUtils.N + msg);
+			final Component modMsg = TCUtil.form(Main.bfr('{', TCUtil.P + StringUtil.toSigFigs(
+				(double) pw.getStat(Stat.WZ_klls) / (double) pw.getStat(Stat.WZ_dths), (byte) 2), '}')
+				+ ChatLst.NIK_COLOR + p.getName() + Main.afr('[', TCUtil.A + "ЛОББИ", ']') + " §7§o≫ " + TCUtil.N + msg);
 			for (final Audience au : e.viewers()) {
 				au.sendMessage(modMsg);
 			}
@@ -224,8 +226,8 @@ public class MainLis implements Listener {
 			final Component modMsg;
 			switch (ar.getState()) {
 			case WAITING:
-				modMsg = TCUtils.format(ChatLst.NIK_COLOR + p.getName()
-					+ Main.afr('[', TCUtils.P + ar.getName(), ']') + " §7§o≫ " + TCUtils.N + msg);
+				modMsg = TCUtil.form(ChatLst.NIK_COLOR + p.getName()
+					+ Main.afr('[', TCUtil.P + ar.getName(), ']') + " §7§o≫ " + TCUtil.N + msg);
 				for (final Audience au : e.viewers()) {
 					au.sendMessage(modMsg);
 				}
@@ -234,9 +236,9 @@ public class MainLis implements Listener {
 			case RUNNING:
 			case END:
 				if (msg.length() > 1 && msg.charAt(0) == '!') {
-					modMsg = TCUtils.format(TCUtils.N + "[Всем] "
-						+ (pw.team() == null ? TCUtils.N : pw.team().color()) +
-						p.getName() + " §7§o≫ " + TCUtils.N + msg.substring(1));
+					modMsg = TCUtil.form(TCUtil.N + "[Всем] "
+						+ (pw.team() == null ? TCUtil.N : pw.team().color()) +
+						p.getName() + " §7§o≫ " + TCUtil.N + msg.substring(1));
 					for (final PlWarrior ors : ar.getPls().values()) {
 						final Player pl = ors.getPlayer();
 						pl.sendMessage(modMsg);
@@ -248,8 +250,8 @@ public class MainLis implements Listener {
 						pl.playSound(pl.getLocation(), Sound.BLOCK_GRINDSTONE_USE, 1f, 1.4f);
 					}
 				} else {
-					modMsg = TCUtils.format((pw.team() == null ? TCUtils.N : pw.team().color()) +
-						p.getName() + " §7§o≫ " + TCUtils.N + msg);
+					modMsg = TCUtil.form((pw.team() == null ? TCUtil.N : pw.team().color()) +
+						p.getName() + " §7§o≫ " + TCUtil.N + msg);
 					for (final PlWarrior ors : ar.getPls().values()) {
 						if (Objects.equals(pw.team(), ors.team())) {
 							final Player pl = ors.getPlayer();
@@ -266,21 +268,21 @@ public class MainLis implements Listener {
 
 	public static String entDie() {
         return switch (new Random().nextInt(4)) {
-            case 0 -> TCUtils.N + " помер от рук ";
-            case 1 -> TCUtils.N + " был раздроблен ";
-            case 2 -> TCUtils.N + " не смог устоять перед красотой ";
-            case 3 -> TCUtils.N + " самоликвидировался при виде ";
-            default -> TCUtils.N;
+            case 0 -> TCUtil.N + " помер от рук ";
+            case 1 -> TCUtil.N + " был раздроблен ";
+            case 2 -> TCUtil.N + " не смог устоять перед красотой ";
+            case 3 -> TCUtil.N + " самоликвидировался при виде ";
+            default -> TCUtil.N;
         };
 	}
 	
 	public static String snglDie() {
         return switch (new Random().nextInt(4)) {
-            case 0 -> TCUtils.N + " скончался";
-            case 1 -> TCUtils.N + " откинул коньки";
-            case 2 -> TCUtils.N + " сдохся";
-            case 3 -> TCUtils.N + " умер";
-            default -> TCUtils.N;
+            case 0 -> TCUtil.N + " скончался";
+            case 1 -> TCUtil.N + " откинул коньки";
+            case 2 -> TCUtil.N + " сдохся";
+            case 3 -> TCUtil.N + " умер";
+            default -> TCUtil.N;
         };
 	}
 }

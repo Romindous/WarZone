@@ -2,7 +2,7 @@ package ru.romindous.wz.Game;
 
 import net.kyori.adventure.text.format.NamedTextColor;
 import ru.komiss77.modules.world.WXYZ;
-import ru.komiss77.utils.TCUtils;
+import ru.komiss77.utils.TCUtil;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -21,7 +21,7 @@ public class Team {
 		this.rsps = RESPS;
 		this.spwn = spwn;
 		this.txc = txc;
-		this.cc = TCUtils.toChar(txc);
+		this.cc = TCUtil.toChar(txc);
 		this.pls = new HashMap<>();
 	}
 
@@ -30,18 +30,18 @@ public class Team {
 	}
 
 	public String name(final String end, final boolean clr) {
-		return TCUtils.nameOf(cc, end, clr);
+		return TCUtil.nameOf(cc, end, clr);
 	}
 
 	public String desc(final PlWarrior pw) {
 		if (pls.isEmpty()) {
-			return " " + name("ая", true) + TCUtils.N + ": <X>";
+			return " " + name("ая", true) + TCUtil.N + ": <X>";
 		} else if (this.equals(pw.team())) {
-			return rsps == 0 ? "§8◆ " + name("ая", true) + TCUtils.N + ": " + TCUtils.A + pls.size() + TCUtils.N + " чел."
-				: "§8◆ " + name("ая", true) + TCUtils.N + ": " + TCUtils.P + rsps + TCUtils.N + " возр.";
+			return rsps == 0 ? "§8◆ " + name("ая", true) + TCUtil.N + ": " + TCUtil.A + pls.size() + TCUtil.N + " чел."
+				: "§8◆ " + name("ая", true) + TCUtil.N + ": " + TCUtil.P + rsps + TCUtil.N + " возр.";
 		} else {
-			return rsps == 0 ? " " + name("ая", true) + TCUtils.N + ": " + TCUtils.A + pls.size() + TCUtils.N + " чел."
-				: " " + name("ая", true) + TCUtils.N + ": " + TCUtils.P + rsps + TCUtils.N + " возр.";
+			return rsps == 0 ? " " + name("ая", true) + TCUtil.N + ": " + TCUtil.A + pls.size() + TCUtil.N + " чел."
+				: " " + name("ая", true) + TCUtil.N + ": " + TCUtil.P + rsps + TCUtil.N + " возр.";
 		}
 	}
 

@@ -21,8 +21,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import ru.komiss77.ApiOstrov;
 import ru.komiss77.modules.player.PM;
-import ru.komiss77.utils.ItemUtils;
-import ru.komiss77.utils.TCUtils;
+import ru.komiss77.utils.ItemUtil;
+import ru.komiss77.utils.TCUtil;
 import ru.romindous.wz.Game.Arena;
 import ru.romindous.wz.Game.PlWarrior;
 import ru.romindous.wz.Main;
@@ -53,9 +53,9 @@ public class InventoryLis implements Listener{
 		}
 		final ItemStack it = e.getCurrentItem();
 		//клик на ничего?
-		if (ItemUtils.isBlank(it, false)) return;
+		if (ItemUtil.isBlank(it, false)) return;
 		final String nm = it.hasItemMeta() && it.getItemMeta().hasDisplayName() 
-			? TCUtils.stripColor(it.getItemMeta().displayName()) : "";
+			? TCUtil.strip(it.getItemMeta().displayName()) : "";
 		//спектаторы
 		if (p.getGameMode() == GameMode.SPECTATOR
 			&& it.getType() == Material.REDSTONE) {
@@ -64,12 +64,12 @@ public class InventoryLis implements Listener{
 			return;
 		}
 		
-		final String inm = TCUtils.stripColor(e.getView().title());
+		final String inm = TCUtil.strip(e.getView().title());
 		if (e.getClickedInventory() instanceof PlayerInventory) {
 			//передвигает вещи которые не надо
 			if (nm.contains("Выбор") || nm.contains("Выход")) {
 				e.setCancelled(true);
-				e.getCursor().setType(Material.AIR);
+				p.setItemOnCursor(null);
             }
 		} else if (inm.contains("Карты")) {
 			e.setCancelled(true);
@@ -93,32 +93,32 @@ public class InventoryLis implements Listener{
 				p.closeInventory();
 				return;
 			case CAKE:
-				inv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Магазин Еды"));
+				inv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Магазин Еды"));
 				inv.setContents(Inventories.fillShpFdInv());
 				p.closeInventory();
 				p.openInventory(inv);
 				break;
 			case WOODEN_SWORD:
-				inv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Магазин Оружия"));
+				inv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Магазин Оружия"));
 				inv.setContents(Inventories.fillShpWpnInv(p.getInventory(), pw.team()));
 				p.closeInventory();
 				p.openInventory(inv);
 				break;
 			case TURTLE_HELMET:
-				inv = Bukkit.createInventory(p, 54, TCUtils.format(TCUtils.P + "Магазин Брони"));
+				inv = Bukkit.createInventory(p, 54, TCUtil.form(TCUtil.P + "Магазин Брони"));
 				inv.setContents(Inventories.fillShpArmrInv(p.getInventory(), pw.team()));
 				p.closeInventory();
 				p.openInventory(inv);
 				break;
 			case ENDER_EYE:
-				inv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Магазин Разного"));
+				inv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Магазин Разного"));
 				inv.setContents(Inventories.fillShpXtrInv());
 				p.closeInventory();
 				p.openInventory(inv);
 				break;
 			default:
 				if (it.getType() == Material.getMaterial("WOODEN" + ar.getTlSfx())) {
-					inv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Магазин Инструментов"));
+					inv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Магазин Инструментов"));
 					inv.setContents(Inventories.fillShpTlInv(p.getInventory(), ar.getTlSfx(), pw.team()));
 					p.closeInventory();
 					p.openInventory(inv);
@@ -130,7 +130,7 @@ public class InventoryLis implements Listener{
 			switch (it.getType()) {
 			case REDSTONE_TORCH:
 				p.closeInventory();
-				final Inventory inv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Выбор Магазина"));
+				final Inventory inv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Выбор Магазина"));
 				inv.setContents(Inventories.fillShpInv(ar));
 				p.openInventory(inv);
 				return;
@@ -186,7 +186,7 @@ public class InventoryLis implements Listener{
 				break;
 			case REDSTONE_TORCH:
 				p.closeInventory();
-				final Inventory inv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Выбор Магазина"));
+				final Inventory inv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Выбор Магазина"));
 				inv.setContents(Inventories.fillShpInv(ar));
 				p.openInventory(inv);
 				return;
@@ -213,7 +213,7 @@ public class InventoryLis implements Listener{
 					nit.addEnchantments(remIt(pi, false, Arrays.copyOf(Priced.WEAPONS, stage)));
 					pi.addItem(nit);
 					p.closeInventory();
-					final Inventory ninv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Магазин Оружия"));
+					final Inventory ninv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Магазин Оружия"));
 					ninv.setContents(Inventories.fillShpWpnInv(pi, pw.team()));
 					p.openInventory(ninv);
 				} else {
@@ -246,7 +246,7 @@ public class InventoryLis implements Listener{
 				break;
 			case REDSTONE_TORCH:
 				p.closeInventory();
-				final Inventory inv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Выбор Магазина"));
+				final Inventory inv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Выбор Магазина"));
 				inv.setContents(Inventories.fillShpInv(ar));
 				p.openInventory(inv);
 				return;
@@ -276,7 +276,7 @@ public class InventoryLis implements Listener{
 					final ItemStack nit = strpLr(it.clone());
 					nit.addEnchantments(remIt(pi, false, Arrays.copyOf(mts, stage)));
 					pi.addItem(nit);
-					final Inventory ninv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Магазин Инструментов"));
+					final Inventory ninv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Магазин Инструментов"));
 					ninv.setContents(Inventories.fillShpTlInv(p.getInventory(), ar.getTlSfx(), pw.team()));
 					p.closeInventory();
 					p.openInventory(ninv);
@@ -294,7 +294,7 @@ public class InventoryLis implements Listener{
 				break;
 			case REDSTONE_TORCH:
 				p.closeInventory();
-				final Inventory inv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Выбор Магазина"));
+				final Inventory inv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Выбор Магазина"));
 				inv.setContents(Inventories.fillShpInv(ar));
 				p.openInventory(inv);
 				return;
@@ -305,7 +305,7 @@ public class InventoryLis implements Listener{
                         case HAND, OFF_HAND -> new Material[] {};
                         case FEET -> Priced.FEET;
                         case LEGS -> Priced.LEGS;
-                        case CHEST -> Priced.CHEST;
+                        case CHEST, BODY -> Priced.CHEST;
                         case HEAD -> Priced.HEAD;
                     };
 
@@ -333,7 +333,7 @@ public class InventoryLis implements Listener{
 					final ItemStack nit = strpLr(it.clone());
 					nit.addEnchantments(remIt(pi, false, Arrays.copyOf(mts, stage)));
 					pi.setItem(it.getType().getEquipmentSlot(), nit);
-					final Inventory ninv = Bukkit.createInventory(p, 54, TCUtils.format(TCUtils.P + "Магазин Брони"));
+					final Inventory ninv = Bukkit.createInventory(p, 54, TCUtil.form(TCUtil.P + "Магазин Брони"));
 					ninv.setContents(Inventories.fillShpArmrInv(pi, pw.team()));
 					p.closeInventory();
 					p.openInventory(ninv);
@@ -359,8 +359,8 @@ public class InventoryLis implements Listener{
 				p.playSound(p.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
 				if (pw.team() != null) {
 					pw.team().rsps++;
-					final String msg = Main.PRFX + pw.team().name("ая", true) + TCUtils.N
-						+ " комманда приобрела себе " + TCUtils.A + "+1 " + TCUtils.N + "возрождение!";
+					final String msg = Main.PRFX + pw.team().name("ая", true) + TCUtil.N
+						+ " комманда приобрела себе " + TCUtil.A + "+1 " + TCUtil.N + "возрождение!";
 					for (final PlWarrior plw : ar.getPls().values()) {
 						plw.getPlayer().sendMessage(msg);
 						plw.score.getSideBar().update(pw.team().color(), pw.team().desc(plw));
@@ -370,8 +370,8 @@ public class InventoryLis implements Listener{
 				break;
 			case SPLASH_POTION:
 				prc = switch (((PotionMeta) it.getItemMeta()).getBasePotionType()) {
-					case INSTANT_HEAL -> Main.extras.getOrDefault("health", 0);
-					case SPEED -> Main.extras.getOrDefault("speed", 0);
+					case HEALING -> Main.extras.getOrDefault("health", 0);
+					case SWIFTNESS -> Main.extras.getOrDefault("speed", 0);
 					case STRENGTH -> Main.extras.getOrDefault("strong", 0);
 					default -> 0;
 				};
@@ -388,7 +388,7 @@ public class InventoryLis implements Listener{
 			case ENCHANTED_BOOK:
 				//есть что то в курсоре?
 				final ItemStack cr = e.getCursor();
-				if (ItemUtils.isBlank(cr, false)) {
+				if (ItemUtil.isBlank(cr, false)) {
 					p.sendMessage(Main.PRFX + "§cНажми на книгу предметом, который хочешь зачаровать!");
 					p.playSound(p.getLocation(), Sound.ENTITY_WANDERING_TRADER_NO, 1, 1);
 					return;
@@ -397,11 +397,11 @@ public class InventoryLis implements Listener{
 				final String m = cr.getType().name();
 				final Enchantment en;
 				if (m.endsWith("_SWORD")) {
-					en = Enchantment.DAMAGE_ALL;
+					en = Enchantment.SHARPNESS;
 				} else if (m.endsWith(ar.getTlSfx())) {
-					en = Enchantment.DIG_SPEED;
+					en = Enchantment.EFFICIENCY;
 				} else if (m.endsWith("HELMET") || m.contains("CHESTPLATE") || m.contains("LEGGINGS") || m.contains("BOOTS")) {
-					en = Enchantment.PROTECTION_ENVIRONMENTAL;
+					en = Enchantment.PROTECTION;
 				} else if (m.endsWith("BOW")) {
 					en = Enchantment.QUICK_CHARGE;
 				} else {
@@ -431,7 +431,7 @@ public class InventoryLis implements Listener{
 				break;
 			case REDSTONE_TORCH:
 				p.closeInventory();
-				final Inventory inv = Bukkit.createInventory(p, 27, TCUtils.format(TCUtils.P + "Выбор Магазина"));
+				final Inventory inv = Bukkit.createInventory(p, 27, TCUtil.form(TCUtil.P + "Выбор Магазина"));
 				inv.setContents(Inventories.fillShpInv(ar));
 				p.openInventory(inv);
 				return;
@@ -514,7 +514,7 @@ public class InventoryLis implements Listener{
 	public static boolean canResBuy(final PlayerInventory inv, final ItemStack it, final Material[] mts) {
 		if (!it.hasItemMeta() || !it.getItemMeta().hasLore()) return false;
 		for (final Component c : it.getItemMeta().lore()) {
-			final String s = TCUtils.stripColor(c);
+			final String s = TCUtil.strip(c);
 
 			final int mt;
 			if (s.indexOf(Priced.FST_MAT) > 0) mt = 0;
@@ -542,7 +542,7 @@ public class InventoryLis implements Listener{
 	public static void remIts(final PlayerInventory inv, final ItemStack it, final Material[] mts) {
 		if (!it.hasItemMeta() || !it.getItemMeta().hasLore()) return;
 		for (final Component c : it.getItemMeta().lore()) {
-			final String s = TCUtils.stripColor(c);
+			final String s = TCUtil.strip(c);
 //			inv.getHolder().sendMessage(s);
 			final int mt;
 			if (s.indexOf(Priced.FST_MAT) > 0) mt = 0;
@@ -561,7 +561,7 @@ public class InventoryLis implements Listener{
 						continue;
 					}
 					amt -= ofh.getAmount();
-					inv.setItemInOffHand(ItemUtils.air);
+					inv.setItemInOffHand(ItemUtil.air);
 				}
 
 				while (true) {

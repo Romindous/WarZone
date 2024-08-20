@@ -5,7 +5,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import ru.komiss77.modules.player.Oplayer;
-import ru.komiss77.utils.TCUtils;
+import ru.komiss77.utils.TCUtil;
 import ru.komiss77.utils.inventory.InventoryManager;
 import ru.komiss77.utils.inventory.SmartInventory;
 import ru.romindous.wz.Main;
@@ -50,9 +50,9 @@ public class PlWarrior extends Oplayer {
             this.team = tm;
             tm.pls.put(nik, this);
             p.playSound(p.getLocation(), Sound.ITEM_ARMOR_EQUIP_IRON, 2f, 1f);
-            p.sendMessage(Main.PRFX + "Ты теперь в " + tm.name("ой", true) + TCUtils.N + " комманде!");
-            taq(Main.bfr('[', TCUtils.A + ar.getName(), ']'), team.color(),
-                Main.afr('(', TCUtils.P + kills + TCUtils.N + "-" + TCUtils.P + mobs, ')'));
+            p.sendMessage(Main.PRFX + "Ты теперь в " + tm.name("ой", true) + TCUtil.N + " комманде!");
+            taq(Main.bfr('[', TCUtil.A + ar.getName(), ']'), team.color(),
+                Main.afr('(', TCUtil.P + kills + TCUtil.N + "-" + TCUtil.P + mobs, ')'));
         }
         for (final PlWarrior sh : ar.getPls().values()) {
             final Player pl = sh.getPlayer(); if (pl == null) continue;
@@ -76,7 +76,7 @@ public class PlWarrior extends Oplayer {
     public int coins() {return coins;}
     public void coins(final int dc) {
         this.coins += dc;
-        score.getSideBar().update(Arena.MONEY, TCUtils.N + "Монет: " + TCUtils.P + coins + " ⛃");
+        score.getSideBar().update(Arena.MONEY, TCUtil.N + "Монет: " + TCUtil.P + coins + " ⛃");
     }
     public void coins0() {this.coins = 0;}
 

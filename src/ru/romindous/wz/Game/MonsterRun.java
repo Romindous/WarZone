@@ -6,7 +6,10 @@ import org.bukkit.Particle;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
-import org.bukkit.entity.*;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Mob;
+import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -14,10 +17,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import ru.komiss77.modules.world.LocFinder;
 import ru.komiss77.modules.world.WXYZ;
 import ru.komiss77.utils.FastMath;
-import ru.komiss77.utils.LocationUtil;
-import ru.komiss77.utils.TeleportLoc;
+import ru.komiss77.utils.LocUtil;
 import ru.romindous.wz.Main;
 
 public class MonsterRun extends BukkitRunnable {
@@ -39,15 +42,16 @@ public class MonsterRun extends BukkitRunnable {
 		final Location cntr = ar.getCntr().getCenterLoc();
 		for (final PlWarrior pw : ar.getPls().values()) {
 			final Location loc = pw.getPlayer().getEyeLocation();
-			TeleportLoc.onSafeLocAsync(new Location(loc.getWorld(), (loc.getX() - cntr.getX()) * rdl + cntr.getX() + rfx,
-				cntr.getY(), (loc.getZ() - cntr.getZ()) * rdl + cntr.getZ() + rfz), (byte) 3, false, (byte) 2, spwn -> {
+			LocFinder.onAsyncFind(new WXYZ(loc.getWorld(), (int) ((loc.getX() - cntr.getX()) * rdl + cntr.getX() + rfx),
+				cntr.getBlockY(), (int) ((loc.getZ() - cntr.getZ()) * rdl + cntr.getZ() + rfz)),
+				LocFinder.DEFAULT_CHECKS, true, 3, 1, spwn -> {
 				//смотрим если там уже поблизости есть мобы
-				if (!LocationUtil.getChEnts(new WXYZ(spwn), Main.tstRds, Mob.class, m -> true).isEmpty()) return;
+				if (!LocUtil.getChEnts(spwn, Main.tstRds, Mob.class, m -> true).isEmpty()) return;
 				//лвл моба
 				final byte lvl = (byte) (Math.max(Main.maxlvl - (Main.maxlvl * ar.getCntr().distAbs(spwn) / mxdst), 0));
 				//спавн моба
-				final LivingEntity ent = (LivingEntity) spwn.getWorld().spawnEntity(spwn, rndEntTp(lvl));
-				spwn.getWorld().spawnParticle(Particle.SOUL, spwn, 20 * lvl, 0.6d, 0.8d, 0.6d, 0d);
+				final LivingEntity ent = (LivingEntity) spwn.w.spawnEntity(spwn.getCenterLoc(), rndEntTp(lvl));
+				spwn.w.spawnParticle(Particle.SOUL, spwn.getCenterLoc(), 20 * lvl, 0.6d, 0.8d, 0.6d, 0d);
 				ent.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE,
 					1000000, 0, true, false, false));
 				final EntityEquipment eq = ent.getEquipment();
@@ -107,9 +111,9 @@ public class MonsterRun extends BukkitRunnable {
 			case TOOL:
 				while (j != 0) {
                     switch (Main.srnd.nextInt(3)) {
-                        case 0 -> incrEnch(mt, Enchantment.DIG_SPEED);
-                        case 1 -> incrEnch(mt, Enchantment.DURABILITY);
-                        case 2 -> incrEnch(mt, Enchantment.LOOT_BONUS_BLOCKS);
+                        case 0 -> incrEnch(mt, Enchantment.EFFICIENCY);
+                        case 1 -> incrEnch(mt, Enchantment.UNBREAKING);
+                        case 2 -> incrEnch(mt, Enchantment.FORTUNE);
                     }
 					j--;
 				}
@@ -117,7 +121,7 @@ public class MonsterRun extends BukkitRunnable {
 			case WEAPON:
 				while (j != 0) {
                     switch (Main.srnd.nextInt(3)) {
-                        case 0 -> incrEnch(mt, Enchantment.DAMAGE_ALL);
+                        case 0 -> incrEnch(mt, Enchantment.SHARPNESS);
                         case 1 -> incrEnch(mt, Enchantment.KNOCKBACK);
                         case 2 -> incrEnch(mt, Enchantment.FIRE_ASPECT);
                     }
@@ -127,9 +131,9 @@ public class MonsterRun extends BukkitRunnable {
 			case BOW:
 				while (j != 0) {
                     switch (Main.srnd.nextInt(3)) {
-                        case 0 -> incrEnch(mt, Enchantment.ARROW_DAMAGE);
-                        case 1 -> incrEnch(mt, Enchantment.ARROW_KNOCKBACK);
-                        case 2 -> incrEnch(mt, Enchantment.ARROW_FIRE);
+                        case 0 -> incrEnch(mt, Enchantment.POWER);
+                        case 1 -> incrEnch(mt, Enchantment.PUNCH);
+                        case 2 -> incrEnch(mt, Enchantment.FLAME);
                     }
 					j--;
 				}
@@ -137,8 +141,8 @@ public class MonsterRun extends BukkitRunnable {
 			case ARMOR:
 				while (j != 0) {
                     switch (Main.srnd.nextInt(3)) {
-                        case 0 -> incrEnch(mt, Enchantment.PROTECTION_ENVIRONMENTAL);
-                        case 1 -> incrEnch(mt, Enchantment.PROTECTION_PROJECTILE);
+                        case 0 -> incrEnch(mt, Enchantment.PROTECTION);
+                        case 1 -> incrEnch(mt, Enchantment.PROJECTILE_PROTECTION);
                         case 2 -> incrEnch(mt, Enchantment.THORNS);
                     }
 					j--;

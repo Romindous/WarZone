@@ -14,7 +14,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import ru.komiss77.utils.ItemBuilder;
-import ru.komiss77.utils.TCUtils;
+import ru.komiss77.utils.TCUtil;
 import ru.romindous.wz.Game.Arena;
 import ru.romindous.wz.Game.GameState;
 import ru.romindous.wz.Game.Team;
@@ -64,7 +64,7 @@ public class Inventories {
 									? amt + " из " + ar.getMin() : amt + " из " + ar.getMax()))), (byte) 1, true);
 						} else {
 							its[i] = mkItm(Material.RED_CONCRETE_POWDER, "§c" + anm,
-								new LinkedList<>(Arrays.asList("", "§4Идет Игра", "", TCUtils.N + "Нажмите для наблюдения!")), (byte) 1, true);
+								new LinkedList<>(Arrays.asList("", "§4Идет Игра", "", TCUtil.N + "Нажмите для наблюдения!")), (byte) 1, true);
 						}
 					}
 				}
@@ -89,23 +89,23 @@ public class Inventories {
 				break;
 			case 10:
 				its[i] = mkItm(Material.CAKE, "§6Еда",
-					Arrays.asList(" ", TCUtils.N + "Покупка за " + TCUtils.P + "Ресурсы"), (byte) 1, true);
+					Arrays.asList(" ", TCUtil.N + "Покупка за " + TCUtil.P + "Ресурсы"), (byte) 1, true);
 				break;
 			case 12:
 				its[i] = mkItm(Material.WOODEN_SWORD, "§6Оружие",
-					Arrays.asList(" ", TCUtils.N + "Покупка за " + TCUtils.P + "Ресурсы"), (byte) 1, true);
+					Arrays.asList(" ", TCUtil.N + "Покупка за " + TCUtil.P + "Ресурсы"), (byte) 1, true);
 				break;
 			case 13:
 				its[i] = mkItm(Material.getMaterial("WOODEN" + ar.getTlSfx()), "§6Инструменты",
-					Arrays.asList(" ", TCUtils.N + "Покупка за " + TCUtils.P + "Ресурсы"), (byte) 1, true);
+					Arrays.asList(" ", TCUtil.N + "Покупка за " + TCUtil.P + "Ресурсы"), (byte) 1, true);
 				break;
 			case 14:
 				its[i] = mkItm(Material.TURTLE_HELMET, "§6Броня",
-					Arrays.asList(" ", TCUtils.N + "Покупка за " + TCUtils.P + "Ресурсы"), (byte) 1, true);
+					Arrays.asList(" ", TCUtil.N + "Покупка за " + TCUtil.P + "Ресурсы"), (byte) 1, true);
 				break;
 			case 16:
 				its[i] = mkItm(Material.ENDER_EYE, "§6Разное",
-					Arrays.asList(" ", TCUtils.N + "Покупка за §eМонеты"), (byte) 1, true);
+					Arrays.asList(" ", TCUtil.N + "Покупка за §eМонеты"), (byte) 1, true);
 				break;
 			case 22:
 				its[i] = mkItm(Material.BARRIER, "§cВыход", true);
@@ -118,7 +118,7 @@ public class Inventories {
 		return its;
 	}
 
-	private static final Color fwc = TCUtils.getBukkitColor(TCUtils.getTextColor(TCUtils.A));
+	private static final Color fwc = TCUtil.getBukkitColor(TCUtil.getTextColor(TCUtil.A));
 	
 	public static ItemStack[] fillShpWpnInv(final PlayerInventory inv, final Team tm) {
 		final ItemStack[] its = new ItemStack[27];
@@ -131,7 +131,7 @@ public class Inventories {
 			switch (i) {
 			case 4:
 				its[i] = mkItm(Material.WOODEN_SWORD, "§6Оружие",
-					Arrays.asList(" ", TCUtils.N + "Покупка за " + TCUtils.P + "Ресурсы"), (byte) 1, true);
+					Arrays.asList(" ", TCUtil.N + "Покупка за " + TCUtil.P + "Ресурсы"), (byte) 1, true);
 				break;
 			case 10:
 				its[i] = mkItm(Material.GOLDEN_SWORD, tm.color() + "Затупелый Меч", getTlWpnPrs("sword1", bfr), (byte) 1, true);
@@ -151,8 +151,8 @@ public class Inventories {
 			case 16:
 				final ItemStack it = new ItemStack(Material.FIREWORK_ROCKET, 8);
 				final FireworkMeta fm = (FireworkMeta) it.getItemMeta();
-				fm.displayName(TCUtils.format(tm.color() + "Фейерверк"));
-				fm.lore(getRecPrs("frwork").stream().map(TCUtils::format).toList());
+				fm.displayName(TCUtil.form(tm.color() + "Фейерверк"));
+				fm.lore(getRecPrs("frwork").stream().map(TCUtil::form).toList());
 				final FireworkEffect fe = FireworkEffect.builder().with(Type.BURST).withColor(Color.fromRGB(tm.txc.value())).build();
 				fm.addEffects(fe, fe, fe, fe);
 				it.setItemMeta(fm);
@@ -180,7 +180,7 @@ public class Inventories {
 			switch (i) {
 			case 4:
 				its[i] = mkItm(Material.getMaterial("STONE" + sfx), "§6Инструменты",
-					Arrays.asList(" ", TCUtils.N + "Покупка за " + TCUtils.P + "Ресурсы"), (byte) 1, true);
+					Arrays.asList(" ", TCUtil.N + "Покупка за " + TCUtil.P + "Ресурсы"), (byte) 1, true);
 				break;
 			case 10:
 				its[i] = mkItm(Material.getMaterial("IRON" + sfx), tm.color() + "Затупелый Инструмент",
@@ -214,7 +214,7 @@ public class Inventories {
 			switch (i) {
 			case 4:
 				its[i] = mkItm(Material.CAKE, "§6Еда",
-					Arrays.asList(" ", TCUtils.N + "Покупка за " + TCUtils.P + "Ресурсы"), (byte) 1, true);
+					Arrays.asList(" ", TCUtil.N + "Покупка за " + TCUtil.P + "Ресурсы"), (byte) 1, true);
 				break;
 			case 10:
 				its[i] = mkItm(Material.APPLE, null, getRecPrs("food1"), (byte) 4, true);
@@ -251,7 +251,7 @@ public class Inventories {
 			switch (i) {
 			case 4:
 				its[i] = mkItm(Material.TURTLE_HELMET, "§6Броня",
-					Arrays.asList(" ", TCUtils.N + "Покупка за " + TCUtils.P + "Ресурсы"), (byte) 1, true);
+					Arrays.asList(" ", TCUtil.N + "Покупка за " + TCUtil.P + "Ресурсы"), (byte) 1, true);
 				break;
 				
 			case 10:
@@ -423,30 +423,30 @@ public class Inventories {
 		for (byte i = 0; i < 27; i++) {
 			switch (i) {
 			case 4:
-				its[i] = mkItm(Material.ENDER_EYE, "§6Разное", Arrays.asList(" ", TCUtils.N + "Покупка за §eМонеты"), (byte) 1, true);
+				its[i] = mkItm(Material.ENDER_EYE, "§6Разное", Arrays.asList(" ", TCUtil.N + "Покупка за §eМонеты"), (byte) 1, true);
 				break;
 			case 10:
 				its[i] = mkItm(Material.ENCHANTED_BOOK, "§eЗачарование", Arrays.asList(" ", 
-					TCUtils.P + Main.extras.getOrDefault("ench", 0) + " + (" + Main.extras.getOrDefault("dlvl", 0) 
-						+ " * lvl)" + TCUtils.N + " Монет", " ", TCUtils.N + "Кликните сюда предметом для его §eзачарования" + TCUtils.N + "!", " "), (byte) 1, true);
+					TCUtil.P + Main.extras.getOrDefault("ench", 0) + " + (" + Main.extras.getOrDefault("dlvl", 0) 
+						+ " * lvl)" + TCUtil.N + " Монет", " ", TCUtil.N + "Кликните сюда предметом для его §eзачарования" + TCUtil.N + "!", " "), (byte) 1, true);
 				break;
 			case 12:
-				its[i] = mkItm(Material.TOTEM_OF_UNDYING, "§e+1 Возрождение", Arrays.asList(" ", TCUtils.P + Main.extras.getOrDefault("resp", 0) 
-					+ TCUtils.N + " Монет", " ", TCUtils.N + "Добавляет одно §eвозрождение " + TCUtils.N + "ващей комманде!", " "), (byte) 1, true);
+				its[i] = mkItm(Material.TOTEM_OF_UNDYING, "§e+1 Возрождение", Arrays.asList(" ", TCUtil.P + Main.extras.getOrDefault("resp", 0) 
+					+ TCUtil.N + " Монет", " ", TCUtil.N + "Добавляет одно §eвозрождение " + TCUtil.N + "ващей комманде!", " "), (byte) 1, true);
 				break;
 			case 14:
-				its[i] = new ItemBuilder(Material.SPLASH_POTION).setBasePotionType(PotionType.INSTANT_HEAL)
-					.addCustomPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 200, 1))
-					.name("§eЛечащее Зелье").addLore(getCnsPrs("health", "Имеет лечащие свойства!")).build();
+				its[i] = new ItemBuilder(Material.SPLASH_POTION).basePotion(PotionType.HEALING)
+					.customPotion(new PotionEffect(PotionEffectType.REGENERATION, 200, 1))
+					.name("§eЛечащее Зелье").lore(getCnsPrs("health", "Имеет лечащие свойства!")).build();
 				break;
 			case 15:
-				its[i] = new ItemBuilder(Material.SPLASH_POTION).setBasePotionType(PotionType.SPEED)
-					.addCustomPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 500, 1))
-					.name("§eЗелье Ускорения").addLore(getCnsPrs("speed", "Ускоряет работу!")).build();
+				its[i] = new ItemBuilder(Material.SPLASH_POTION).basePotion(PotionType.SWIFTNESS)
+					.customPotion(new PotionEffect(PotionEffectType.HASTE, 500, 1))
+					.name("§eЗелье Ускорения").lore(getCnsPrs("speed", "Ускоряет работу!")).build();
 				break;
 			case 16:
-				its[i] = new ItemBuilder(Material.SPLASH_POTION).setBasePotionType(PotionType.STRENGTH)
-					.name("§eЗелье Силы").addLore(getCnsPrs("strong", "Дарует силу!")).build();
+				its[i] = new ItemBuilder(Material.SPLASH_POTION).basePotion(PotionType.STRENGTH)
+					.name("§eЗелье Силы").lore(getCnsPrs("strong", "Дарует силу!")).build();
 				break;
 			case 22:
 				its[i] = mkItm(Material.REDSTONE_TORCH, "§cНазад", true);
@@ -463,9 +463,9 @@ public class Inventories {
 		final LinkedList<String> prs = new LinkedList<>();
 		prs.add(" ");
 		final Priced pr = Main.trades.get(name);
-		if (pr.fst() > 0) prs.add(Arena.FIRST + pr.fst() + TCUtils.N + " Хрупкого Материала");
-		if (pr.scd() > 0) prs.add(Arena.SECOND + pr.scd() + TCUtils.N + " Нормального Материала");
-		if (pr.thd() > 0) prs.add(Arena.THIRD + pr.thd() + TCUtils.N + " Прочного Материала");
+		if (pr.fst() > 0) prs.add(Arena.FIRST + pr.fst() + TCUtil.N + " Хрупкого Материала");
+		if (pr.scd() > 0) prs.add(Arena.SECOND + pr.scd() + TCUtil.N + " Нормального Материала");
+		if (pr.thd() > 0) prs.add(Arena.THIRD + pr.thd() + TCUtil.N + " Прочного Материала");
 		prs.add(" ");
 		return prs;
 	}
@@ -474,9 +474,9 @@ public class Inventories {
 		final LinkedList<String> prs = new LinkedList<>();
 		prs.add(" ");
 		final Priced pr = Main.trades.get(name);
-		if (pr.fst() > 0) prs.add(Arena.FIRST + (int) (pr.fst() * bfr * f) + TCUtils.N + " Хрупкого Материала");
-		if (pr.scd() > 0) prs.add(Arena.SECOND + (int) (pr.scd() * bfr * f) + TCUtils.N + " Нормального Материала");
-		if (pr.thd() > 0) prs.add(Arena.THIRD + (int) (pr.thd() * bfr * f) + TCUtils.N + " Прочного Материала");
+		if (pr.fst() > 0) prs.add(Arena.FIRST + (int) (pr.fst() * bfr * f) + TCUtil.N + " Хрупкого Материала");
+		if (pr.scd() > 0) prs.add(Arena.SECOND + (int) (pr.scd() * bfr * f) + TCUtil.N + " Нормального Материала");
+		if (pr.thd() > 0) prs.add(Arena.THIRD + (int) (pr.thd() * bfr * f) + TCUtil.N + " Прочного Материала");
 		prs.add(" ");
 		return prs;
 	}
@@ -485,28 +485,28 @@ public class Inventories {
 		final LinkedList<String> prs = new LinkedList<>();
 		prs.add(" ");
 		final Priced pr = Main.trades.get(name);
-		if (pr.fst() > 0) prs.add(Arena.FIRST + (int) (pr.fst() * bfr) + TCUtils.N + " Хрупкого Материала");
-		if (pr.scd() > 0) prs.add(Arena.SECOND + (int) (pr.scd() * bfr) + TCUtils.N + " Нормального Материала");
-		if (pr.thd() > 0) prs.add(Arena.THIRD + (int) (pr.thd() * bfr) + TCUtils.N + " Прочного Материала");
+		if (pr.fst() > 0) prs.add(Arena.FIRST + (int) (pr.fst() * bfr) + TCUtil.N + " Хрупкого Материала");
+		if (pr.scd() > 0) prs.add(Arena.SECOND + (int) (pr.scd() * bfr) + TCUtil.N + " Нормального Материала");
+		if (pr.thd() > 0) prs.add(Arena.THIRD + (int) (pr.thd() * bfr) + TCUtil.N + " Прочного Материала");
 		prs.add(" ");
 		return prs;
 	}
 
 	public static List<String> getCnsPrs(final String name, final String dscr) {
-		return Arrays.asList(" ", TCUtils.A + Main.extras.getOrDefault(name, 0) + TCUtils.N + " Монет", " ", TCUtils.N + dscr, " ");
+		return Arrays.asList(" ", TCUtil.A + Main.extras.getOrDefault(name, 0) + TCUtil.N + " Монет", " ", TCUtil.N + dscr, " ");
 	}
 	
 	public static ItemStack mkItm(final Material m, final String dn, final boolean unbrk) {
 		final ItemStack it = new ItemStack(m);
 		final ItemMeta mt = it.getItemMeta();
 		mt.setUnbreakable(unbrk);
-		mt.displayName(TCUtils.format(dn));
+		mt.displayName(TCUtil.form(dn));
 		it.setItemMeta(mt);
 		return it;
 	}
 
 	public static ItemStack mkItm(final Material m, final String dn, final List<String> lr, final byte amt, final boolean unbrk) {
-		return new ItemBuilder(m).setAmount(amt).name(dn).addLore(lr)
-			.setUnbreakable(unbrk).setItemFlag(ItemFlag.HIDE_UNBREAKABLE).build();
+		return new ItemBuilder(m).amount(amt).name(dn).lore(lr)
+			.unbreak(unbrk).flags(ItemFlag.HIDE_UNBREAKABLE).build();
 	}
 }

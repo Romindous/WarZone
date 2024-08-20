@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import ru.komiss77.modules.world.XYZ;
-import ru.romindous.wz.Utils.TitleManager;
 
 public class Setup {
 	
