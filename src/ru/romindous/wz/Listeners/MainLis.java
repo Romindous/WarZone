@@ -216,7 +216,7 @@ public class MainLis implements Listener {
 		if (ar == null) {
 			final Component modMsg = TCUtil.form(Main.bfr('{', TCUtil.P + StringUtil.toSigFigs(
 				(double) pw.getStat(Stat.WZ_klls) / (double) pw.getStat(Stat.WZ_dths), (byte) 2), '}')
-				+ ChatLst.NIK_COLOR + p.getName() + Main.afr('[', TCUtil.A + "ЛОББИ", ']') + " §7§o≫ " + TCUtil.N + msg);
+				+ ChatLst.NIK_COLOR + p.getName() + Main.afr('[', TCUtil.A + "ЛОББИ", ']') + " <gray><i>≫</i> " + TCUtil.N + msg);
 			for (final Audience au : e.viewers()) {
 				au.sendMessage(modMsg);
 			}
@@ -227,7 +227,7 @@ public class MainLis implements Listener {
 			switch (ar.getState()) {
 			case WAITING:
 				modMsg = TCUtil.form(ChatLst.NIK_COLOR + p.getName()
-					+ Main.afr('[', TCUtil.P + ar.getName(), ']') + " §7§o≫ " + TCUtil.N + msg);
+					+ Main.afr('[', TCUtil.P + ar.getName(), ']') + " <gray><i>≫</i> " + TCUtil.N + msg);
 				for (final Audience au : e.viewers()) {
 					au.sendMessage(modMsg);
 				}
@@ -238,7 +238,7 @@ public class MainLis implements Listener {
 				if (msg.length() > 1 && msg.charAt(0) == '!') {
 					modMsg = TCUtil.form(TCUtil.N + "[Всем] "
 						+ (pw.team() == null ? TCUtil.N : pw.team().color()) +
-						p.getName() + " §7§o≫ " + TCUtil.N + msg.substring(1));
+						p.getName() + " <gray><i>≫</i> " + TCUtil.N + msg.substring(1));
 					for (final PlWarrior ors : ar.getPls().values()) {
 						final Player pl = ors.getPlayer();
 						pl.sendMessage(modMsg);
@@ -251,7 +251,7 @@ public class MainLis implements Listener {
 					}
 				} else {
 					modMsg = TCUtil.form((pw.team() == null ? TCUtil.N : pw.team().color()) +
-						p.getName() + " §7§o≫ " + TCUtil.N + msg);
+						p.getName() + " <gray><i>≫</i> " + TCUtil.N + msg);
 					for (final PlWarrior ors : ar.getPls().values()) {
 						if (Objects.equals(pw.team(), ors.team())) {
 							final Player pl = ors.getPlayer();
