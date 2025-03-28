@@ -572,8 +572,8 @@ public class Arena {
 		time = (short) (Main.gmTmMin * 60);
 		state = GameState.RUNNING;
 		//магазины
-		for (byte i = (byte) (shps.length - 1); i >= 0; i--) {
-			final XYZ bp = shSpwns[i];
+		for (int i = shps.length; i != 0; i--) {
+			final XYZ bp = shSpwns[i - 1];
 			final ZombieVillager vll = (ZombieVillager) cntr.w.spawnEntity(new Location(
 				cntr.w, bp.x + 0.5d, bp.y + 0.1d, bp.z + 0.5d), SHOP_TYPE, CreatureSpawnEvent.SpawnReason.CUSTOM);
 			vll.setVillagerType(getBmVllTp(vll.getLocation().getBlock().getBiome()));
@@ -585,7 +585,7 @@ public class Arena {
 			vll.setRemoveWhenFarAway(false);
 			Bukkit.getMobGoals().removeAllGoals(vll);
 			Bukkit.getMobGoals().addGoal(vll, 0, new GoalLookAtPl(vll));
-			shps[i] = vll;
+			shps[i - 1] = vll;
 		}
 		//игроки
 		for (final PlWarrior plw : pls.values()) {
@@ -671,7 +671,7 @@ public class Arena {
 	}
 
 	private Villager.Type getBmVllTp(final Biome b) {
-		return switch (b) {
+		return Villager.Type.PLAINS;/*switch (b) {
 			case BADLANDS, SAVANNA, SAVANNA_PLATEAU, CRIMSON_FOREST, ERODED_BADLANDS -> Villager.Type.SAVANNA;
 			case BEACH, DESERT, NETHER_WASTES, SOUL_SAND_VALLEY -> Villager.Type.DESERT;
 			case BAMBOO_JUNGLE, JUNGLE, MUSHROOM_FIELDS, SPARSE_JUNGLE -> Villager.Type.JUNGLE;
@@ -679,7 +679,7 @@ public class Arena {
 			case SNOWY_BEACH, SNOWY_TAIGA, ICE_SPIKES, SNOWY_PLAINS -> Villager.Type.SNOW;
 			case TAIGA -> Villager.Type.TAIGA;
 			default -> Villager.Type.PLAINS;
-		};
+		};*/
 	}
 
 	public void countEnd(final Random rand, final @Nullable Team wntm) {

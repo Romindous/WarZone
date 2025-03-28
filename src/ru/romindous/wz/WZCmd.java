@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -15,8 +14,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import ru.komiss77.modules.world.WXYZ;
+import ru.komiss77.modules.world.BVec;
 import ru.romindous.wz.Game.Arena;
 import ru.romindous.wz.Game.GameState;
 import ru.romindous.wz.Game.Setup;
@@ -260,8 +258,8 @@ public class WZCmd implements CommandExecutor, TabCompleter{
 					//установка лобби
 				} else if (args.length == 1) {
 					if (args[0].equalsIgnoreCase("setlobby")) {
-						Main.lobby = new WXYZ(p.getLocation());
-						ars.set("lobby.world", Main.lobby.w.getName());
+						Main.lobby = BVec.of(p.getLocation());
+						ars.set("lobby.world", p.getWorld().getName());
 						ars.set("lobby.x", Main.lobby.x);
 						ars.set("lobby.y", Main.lobby.y);
 						ars.set("lobby.z", Main.lobby.z);

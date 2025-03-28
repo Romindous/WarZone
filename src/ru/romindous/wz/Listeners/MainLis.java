@@ -4,10 +4,7 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,6 +15,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import ru.komiss77.ApiOstrov;
@@ -121,7 +119,7 @@ public class MainLis implements Listener {
 		if (Main.lobby != null) {
 			final PlWarrior pw = PM.getOplayer(e.getPlayer(), PlWarrior.class);
 			if (pw.team() == null) {
-				e.setRespawnLocation(Main.lobby.getCenterLoc());
+				e.setRespawnLocation(Main.lobby());
 			} else {
 				e.setRespawnLocation(pw.team().spwn.getCenterLoc());
 			}
@@ -207,6 +205,7 @@ public class MainLis implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onChat(final ChatPrepareEvent e) {
 		final Player p = e.getPlayer();
+		ItemStack it;
 		final PlWarrior pw = PM.getOplayer(p, PlWarrior.class);
 		final Arena ar = pw.arena();
 		final String msg = Perm.canColorChat(e.getOplayer())

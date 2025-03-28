@@ -1,5 +1,10 @@
 package ru.romindous.wz;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.HashMap;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -8,12 +13,12 @@ import org.bukkit.entity.Mob;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
-import ru.komiss77.ApiOstrov;
 import ru.komiss77.enums.Game;
 import ru.komiss77.enums.Stat;
 import ru.komiss77.modules.games.GM;
 import ru.komiss77.modules.player.PM;
-import ru.komiss77.modules.world.WXYZ;
+import ru.komiss77.modules.world.BVec;
+import ru.komiss77.utils.NumUtil;
 import ru.komiss77.utils.StringUtil;
 import ru.komiss77.utils.TCUtil;
 import ru.romindous.wz.Game.Arena;
@@ -26,17 +31,11 @@ import ru.romindous.wz.Listeners.MainLis;
 import ru.romindous.wz.Utils.Inventories;
 import ru.romindous.wz.Utils.Priced;
 
-import java.io.File;
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.HashMap;
-
 public class Main extends JavaPlugin {
 
     public static Main plug;
     public static File folder;
-    public static WXYZ lobby;
+    public static BVec lobby;
     public static String PRFX;
     public static String FULL;
     public static byte GPTmMin;
@@ -141,8 +140,10 @@ public class Main extends JavaPlugin {
             final YamlConfiguration ars = YamlConfiguration.loadConfiguration(file);
             nonactivearenas.clear();
             if (ars.contains("lobby")) {
-                lobby = new WXYZ(Bukkit.getWorld(ars.getString("lobby.world")),
-                    ars.getInt("lobby.x"), ars.getInt("lobby.y"), ars.getInt("lobby.z"));
+                final BVec lb = BVec.of(ars.getInt("lobby.x"),
+                    ars.getInt("lobby.y"), ars.getInt("lobby.z"));
+                final World tw = getServer().getWorld(ars.getString("lobby.world"));
+                lobby = lb.w(tw == null ? Bukkit.getWorlds().getFirst() : tw);
             }
             if (!ars.contains("arenas")) {
                 ars.createSection("arenas");
@@ -168,15 +169,15 @@ public class Main extends JavaPlugin {
         for (final String pr : prs) {
             if (pr.isEmpty()) continue;
             if (pr.length() < 2) {
-                extras.put(s, ApiOstrov.getInteger(pr, 0));
+                extras.put(s, NumUtil.intOf(pr, 0));
                 return;
             }
             switch (pr.charAt(0)) {
-                case 'f' -> amts[0] = ApiOstrov.getInteger(pr.substring(1), 0);
-                case 's' -> amts[1] = ApiOstrov.getInteger(pr.substring(1), 0);
-                case 't' -> amts[2] = ApiOstrov.getInteger(pr.substring(1), 0);
+                case 'f' -> amts[0] = NumUtil.intOf(pr.substring(1), 0);
+                case 's' -> amts[1] = NumUtil.intOf(pr.substring(1), 0);
+                case 't' -> amts[2] = NumUtil.intOf(pr.substring(1), 0);
                 default -> {
-                    extras.put(s, ApiOstrov.getInteger(pr, 0));
+                    extras.put(s, NumUtil.intOf(pr, 0));
                     return;
                 }
             }
@@ -202,7 +203,7 @@ public class Main extends JavaPlugin {
         p.getInventory().setItem(8, Inventories.mkItm(Material.MAGMA_CREAM, "§4Выход в Лобби", true));
         updateScore(pw);
         inGameCnt();
-        if (lobby != null) p.teleport(lobby.getCenterLoc());
+        if (lobby != null) p.teleport(lobby());
         final String prm = pw.getTopPerm();
         pw.taq(bfr('[', TCUtil.A + "ЛОББИ", ']'),
             TCUtil.P, (prm.isEmpty() ? "" : afr('(', "§e" + prm, ')')));
@@ -216,6 +217,11 @@ public class Main extends JavaPlugin {
                 op.hidePlayer(plug, p);
             }
         }
+    }
+
+    public static Location lobby() {
+        final World w = lobby.w();
+        return lobby.center(w == null ? Bukkit.getWorlds().getFirst() : w);
     }
 
     public static void inGameCnt() {
@@ -263,7 +269,7 @@ public class Main extends JavaPlugin {
 
     public static void nrmlzPl(final Player p) {
         p.setGameMode(GameMode.SURVIVAL);
-        p.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20d);
+        p.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20d);
         p.setHealth(20d);
         p.setExp(0);
         p.setLevel(0);

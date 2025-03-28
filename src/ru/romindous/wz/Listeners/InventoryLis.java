@@ -1,5 +1,9 @@
 package ru.romindous.wz.Listeners;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -19,20 +23,15 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
-import ru.komiss77.ApiOstrov;
 import ru.komiss77.modules.player.PM;
 import ru.komiss77.utils.ItemUtil;
+import ru.komiss77.utils.NumUtil;
 import ru.komiss77.utils.TCUtil;
 import ru.romindous.wz.Game.Arena;
 import ru.romindous.wz.Game.PlWarrior;
 import ru.romindous.wz.Main;
 import ru.romindous.wz.Utils.Inventories;
 import ru.romindous.wz.Utils.Priced;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class InventoryLis implements Listener{	
 	
@@ -302,7 +301,7 @@ public class InventoryLis implements Listener{
 				final PlayerInventory pi = p.getInventory();
 				if (canResBuy(pi, it, ar.recs)) {
 					final Material[] mts = switch (it.getType().getEquipmentSlot()) {
-                        case HAND, OFF_HAND -> new Material[] {};
+						case HAND, OFF_HAND, SADDLE -> new Material[] {};
                         case FEET -> Priced.FEET;
                         case LEGS -> Priced.LEGS;
                         case CHEST, BODY -> Priced.CHEST;
@@ -522,7 +521,7 @@ public class InventoryLis implements Listener{
 			else if (s.indexOf(Priced.THD_MAT) > 0) mt = 2;
 			else continue;
 
-			if (!hasAtLeast(inv, mts[mt], ApiOstrov.getInteger(s.substring(0, s.indexOf(' ')), 0)))
+			if (!hasAtLeast(inv, mts[mt], NumUtil.intOf(s.substring(0, s.indexOf(' ')), 0)))
 				return false;
 		}
 		return true;
@@ -550,7 +549,7 @@ public class InventoryLis implements Listener{
 			else if (s.indexOf(Priced.THD_MAT) > 0) mt = 2;
 			else continue;
 
-			int amt = ApiOstrov.getInteger(s.substring(0, s.indexOf(' ')), 0);
+			int amt = NumUtil.intOf(s.substring(0, s.indexOf(' ')), 0);
 //			inv.getHolder().sendMessage(String.valueOf(amt));
 			if (amt > 0) {
 				final ItemStack ofh = inv.getItemInOffHand();
